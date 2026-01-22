@@ -85,7 +85,7 @@ infix_index s1 s2 <=> the first index at which s1 appears in s2,
              rem x s == the subsequence of s, where the first occurrence
                         of x has been removed (compare filter (predC1 x) s
                         where ALL occurrences of x are removed).
-             undup s == the subsequence of s containing only the first
+             undup s == the subsequence of s containing only the last
                         occurrence of each item in s, i.e., s with all
                         duplicates removed.
             mask m s == the subsequence of s selected by m : bitseq, with
@@ -1415,34 +1415,34 @@ symbol undup [a] : (τ a → τ a → 𝔹) → 𝕃 a → 𝕃 a;
 
 rule undup _ □ ↪ □
 with undup $beq ($x ⸬ $l)
-  ↪ if (∈ $beq $x (undup $beq $l)) (undup $beq $l) ($x ⸬ (undup $beq $l));
+  ↪ let l' ≔ undup $beq $l in if (∈ $beq $x l') l' ($x ⸬ l');
 
 assert ⊢ undup eqn (42 ⸬ 2 ⸬ 51 ⸬ 3 ⸬ 2 ⸬ 3 ⸬ □) ≡ 42 ⸬ 51 ⸬ 2 ⸬ 3 ⸬ □;
 
 opaque symbol size_undup [a] beq (l:𝕃 a) : π (size (undup beq l) ≤ size l) ≔
 begin
   assume a beq; induction
-  { apply ⊤ᵢ; }
-  { assume e l h; simplify;
-    refine ind_𝔹 (λ x, istrue (size (if x (undup beq l) (e ⸬ undup beq l)) ≤ size l +1)) _ _ (∈ beq e (undup beq l)) {
+  { apply ⊤ᵢ }
+  { assume e l; simplify; set l' ≔ undup beq l; assume h;
+    refine ind_𝔹 (λ x, istrue (size (if x l' (e ⸬ l')) ≤ size l +1)) _ _ (∈ beq e l') {
       simplify;
-      refine @leq_trans (size (undup beq l)) (size l) (size l +1) h (leqnSn (size l));
+      refine @leq_trans (size l') (size l) (size l +1) h (leqnSn (size l))
     } {
-      simplify; apply h;
-    };
+      simplify; apply h
+    }
   }
 end;
 
 opaque symbol undup_uniq [a] beq (l:𝕃 a) : π (uniq beq (undup beq l)) ≔
 begin
   assume a beq; induction
-  { apply ⊤ᵢ; }
-  { assume e l h; simplify;
-    refine ind_𝔹_eq (λ b, (istrue(uniq beq (if b (undup beq l) (e ⸬ (undup beq l)))))) (∈ beq e (undup beq l)) _ _ {
-      assume i; rewrite i; simplify; apply h;
+  { apply ⊤ᵢ }
+  { assume e l; set l' ≔ undup beq l; assume h; simplify;
+    refine ind_𝔹_eq (λ b, (istrue(uniq beq (if b l' (e ⸬ l'))))) (∈ beq e (undup beq l)) _ _ {
+      assume i; rewrite i; simplify; apply h
     } {
-      assume i; rewrite i; simplify; rewrite i; simplify; apply h; 
-    }; 
+      assume i; rewrite i; simplify; rewrite i; simplify; apply h
+    }
   }
 end;
 
