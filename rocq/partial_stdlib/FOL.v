@@ -1,0 +1,2 @@
+Require Import mappings.
+Definition lp_u00ac_u2203 : forall v247 : Type', forall v248 : v247 -> Prop, (~ (ex_ v247 (fun v250 : v247 => v248 v250))) -> @all v247 (fun v251 : v247 => ~ (v248 v251)) := fun v252 : Type' => fun v253 : v252 -> Prop => fun v255 : ~ (ex_ v252 (fun v256 : v252 => v253 v256)) => fun v257 : v252 => fun v258 : v253 v257 => v255 (@ex_intro v252 (fun v259 : v252 => v253 v259) v257 v258).
