@@ -50,8 +50,8 @@ The current pipeline is not a clean direct export yet. Important workarounds are
 ## Known Limitations
 
 - This is a checked partial slice, not a complete checked translation of the whole Lambdapi standard library.
-- Nat/List are only covered to the extent needed by the current checked standard-library slice. The full generated Nat proof file does not currently check against native Rocq nat because several Lambdapi/Dedukti rewrite-rule computations are not definitional in Rocq.
-- `mappings.v` still contains one admitted lemma, `subset_undup_first`.
+- Bool and Nat are fully absorbed into the current shim layer without `Admitted` or `Axiom` declarations in `mappings.v`.
+- List is still partial as a checked stdlib file. The full generated `List.v` currently has its broad operations mapped without top-level generated `Axiom` declarations, but proof checking still fails later at List theorem proof terms, currently around `size_filter`.
 
 ## Bool/Nat Shim Diagnosis
 
@@ -74,3 +74,9 @@ Nat.add n 1 = S n
 In Lambdapi/Dedukti, this was definitional by rewrite rules. In Rocq, native `Nat.add` recurses on its first argument, so `Nat.add n 1` is stuck when `n` is a variable. Rocq can prove the theorem, but it is not true by computation, so the generated `eq_refl` proof term is not enough.
 
 Thus many Bool/Nat shims compensate for rewrite-rule computation that is lost when mapping Lambdapi symbols to native Rocq `bool` and `nat`. Some individual Nat lemmas may still be translatable with better mappings, but the issue is not only that this snapshot is partial: mapping to native Rocq changes what counts as obvious by reduction.
+
+## Current List Shim Status
+
+The List shim now contains more than the small Disj/Conj subset. It defines or maps many standard List operations, including membership, subset, append, `nth`, `nths`, `size`, `iota`, `indexes`, `head`, `behead`, `eql`, `nseq`, `ncons`, reverse/rotation helpers, `zip`, `drop`, `take`, `index`, `has`, `all`, `find`, `count`, `filter`, `map`, `sumn`, and `prodn`.
+
+The full `List.dk` export is still not part of the checked snapshot. Several generated theorem proof terms require shim lemmas because the original proof relied on Lambdapi/Dedukti reductions or produced encoded `if'` applications that do not typecheck directly in Rocq.

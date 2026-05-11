@@ -47,9 +47,17 @@ Proof.
 Qed.
 Definition neq {a : Type'} (x y : a) := ~ (x = y).
 
+(* Prod.lp *)
+Definition lp_u00d7 (a b : Type') : Type' := {| type := (a * b)%type; el := (el a, el b) |}.
+Canonical lp_u00d7.
+Definition lp_u201a (a b : Type') (x : a) (y : b) : lp_u00d7 a b := (x, y).
+Definition lp_u2081 (a b : Type') (p : lp_u00d7 a b) : a := fst p.
+Definition lp_u2082 (a b : Type') (p : lp_u00d7 a b) : b := snd p.
+
 (* Bool.lp *)
 Definition bool' := {| type := bool ; el := true|}.
 Canonical bool'.
+Definition injectiveistrue : bool' -> Prop := Is_true.
 
 (*************************************************************************)
 (* Stdlib shim workaround mappings                                        *)
@@ -199,6 +207,41 @@ Proof.
   intro h. apply eqn_complete. symmetry. apply eqn_correct. exact h.
 Qed.
 
+Lemma lp_s_u2260_0 (n : nat) : @neq nat' (S n) O.
+Proof. unfold neq. discriminate. Qed.
+
+Lemma lp_0_u2260_s (n : nat) : @neq nat' O (S n).
+Proof. unfold neq. discriminate. Qed.
+
+Lemma casen (n : nat') : n = O \/ @neq nat' n O.
+Proof.
+  destruct n as [|n]; [left; reflexivity | right; apply lp_s_u2260_0].
+Qed.
+
+Lemma lp_u002b_1_inj (n m : nat') : S n = S m -> n = m.
+Proof. intros h. injection h. exact id. Qed.
+
+Lemma add0n (n : nat') : Nat.add O n = n.
+Proof. reflexivity. Qed.
+
+Lemma addn0 (n : nat') : Nat.add n O = n.
+Proof. lia. Qed.
+
+Lemma addSn (n m : nat) : Nat.add (S n) m = S (Nat.add n m).
+Proof. reflexivity. Qed.
+
+Lemma addnS (n m : nat) : Nat.add n (S m) = S (Nat.add n m).
+Proof. lia. Qed.
+
+Lemma add1n (n : nat) : Nat.add (S O) n = S n.
+Proof. reflexivity. Qed.
+
+Lemma addn1 (n : nat) : Nat.add n (S O) = S n.
+Proof. lia. Qed.
+
+Lemma addnC (n m : nat) : Nat.add n m = Nat.add m n.
+Proof. lia. Qed.
+
 Definition addSnnS (n m : nat) : Nat.add (S n) m = Nat.add n (S m) :=
   eq_sym (Nat.add_succ_r n m).
 
@@ -227,6 +270,15 @@ Proof. lia. Qed.
 Lemma addIn (n m p : nat) : Nat.add n p = Nat.add m p -> n = m.
 Proof. lia. Qed.
 
+Lemma addn_eq0 (n m : nat') : iff (Nat.add n m = O) (n = O /\ m = O).
+Proof. split; intros; lia. Qed.
+
+Lemma eqn_add2l (n m p : nat) : iff (Nat.add n m = Nat.add n p) (m = p).
+Proof. split; intros; lia. Qed.
+
+Lemma eqn_add2r (n m p : nat) : iff (Nat.add m n = Nat.add p n) (m = p).
+Proof. split; intros; lia. Qed.
+
 Lemma lp_2_u002a_u003d_0 (n : nat) : Nat.add n n = O -> n = O.
 Proof. lia. Qed.
 
@@ -239,7 +291,16 @@ Proof. unfold neq. lia. Qed.
 Lemma sub0n (n : nat) : Nat.sub n O = n.
 Proof. lia. Qed.
 
+Lemma subn0 (n : nat) : Nat.sub O n = O.
+Proof. destruct n; reflexivity. Qed.
+
 Lemma subn1 (n : nat) : Nat.sub n (S O) = pred n.
+Proof. lia. Qed.
+
+Lemma subSS (n m : nat) : Nat.sub (S n) (S m) = Nat.sub n m.
+Proof. reflexivity. Qed.
+
+Lemma subSnn (n : nat) : Nat.sub (S n) n = S O.
 Proof. lia. Qed.
 
 Lemma subnn (n : nat) : Nat.sub n n = O.
@@ -261,6 +322,12 @@ Lemma subnDA (n m p : nat) : Nat.sub n (Nat.add m p) = Nat.sub (Nat.sub n m) p.
 Proof. lia. Qed.
 
 Lemma subnDl (n m p : nat) : Nat.sub (Nat.add n m) (Nat.add n p) = Nat.sub m p.
+Proof. lia. Qed.
+
+Lemma subnDr (n m p : nat) : Nat.sub (Nat.add m n) (Nat.add p n) = Nat.sub m p.
+Proof. lia. Qed.
+
+Lemma subSKn (n m : nat) : pred (Nat.sub (S n) m) = Nat.sub n m.
 Proof. lia. Qed.
 
 Lemma mul0n (n : nat) : Nat.mul n O = O.
@@ -569,6 +636,41 @@ Proof. minmax_nat. Qed.
 Lemma maxnn (n : nat) : maxn n n = n.
 Proof. minmax_nat. Qed.
 
+Lemma leq_maxl (n m : nat) : Is_true (leq n (maxn n m)).
+Proof.
+  unfold leq, maxn.
+  apply istrue_leb_le.
+  apply Nat.le_max_l.
+Qed.
+
+Lemma leq_maxr (n m : nat) : Is_true (leq m (maxn n m)).
+Proof.
+  unfold leq, maxn.
+  apply istrue_leb_le.
+  apply Nat.le_max_r.
+Qed.
+
+Lemma ltn_predK (n m : nat) : Is_true (ltn n m) -> S (pred m) = m.
+Proof.
+  intros h.
+  destruct m as [|m]; [exact (False_ind _ h) | reflexivity].
+Qed.
+
+Lemma prednK (n : nat') : Is_true (ltn O n) -> S (pred n) = n.
+Proof. apply ltn_predK. Qed.
+
+Lemma ltn0_neq0 (n : nat') : iff (Is_true (ltn O n)) (@neq nat' n O).
+Proof.
+  split.
+  - intros h.
+    destruct n as [|n]; [exact (False_ind _ h) | apply lp_s_u2260_0].
+  - intros h.
+    destruct n as [|n]; [exfalso; apply h; reflexivity | exact I].
+Qed.
+
+Lemma disj0 (n : nat') : n = O \/ @neq nat' n O.
+Proof. apply casen. Qed.
+
 Lemma leq_pmull (n m : nat) : Is_true (gtn m O) -> Is_true (leq n (Nat.mul m n)).
 Proof.
   unfold gtn, leq. intros h.
@@ -628,6 +730,24 @@ Proof.
   rewrite (mulnC m n).
   rewrite (mulnC p n).
   exact (eqn_mul2l n m p).
+Qed.
+
+Lemma eqn_pmul2l (n m p : nat) :
+  Is_true (ltn O n) -> iff (Nat.mul n m = Nat.mul n p) (m = p).
+Proof.
+  intros hn.
+  split.
+  - intros h. unfold ltn in hn. apply istrue_leb_le in hn. nia.
+  - intros ->. reflexivity.
+Qed.
+
+Lemma eqn_pmul2r (n m p : nat) :
+  Is_true (ltn O n) -> iff (Nat.mul m n = Nat.mul p n) (m = p).
+Proof.
+  intros hn.
+  rewrite (mulnC m n).
+  rewrite (mulnC p n).
+  exact (eqn_pmul2l n m p hn).
 Qed.
 
 Lemma leq_pmul2l (n m p : nat) :
@@ -732,6 +852,86 @@ Proof. minmax_nat. Qed.
 Lemma minnMl (n m p : nat) : Nat.mul n (minn m p) = minn (Nat.mul n m) (Nat.mul n p).
 Proof. minmax_nat. Qed.
 
+Lemma expn0 (n : nat) : expn n O = S O.
+Proof. exact (Nat.pow_0_r n). Qed.
+
+Lemma expn1 (n : nat) : expn n (S O) = n.
+Proof. exact (Nat.pow_1_r n). Qed.
+
+Lemma expnS (n m : nat) : expn n (S m) = Nat.mul n (expn n m).
+Proof.
+  unfold expn.
+  rewrite Nat.pow_succ_r by lia.
+  reflexivity.
+Qed.
+
+Lemma expnSr (n m : nat) : expn n (S m) = Nat.mul (expn n m) n.
+Proof.
+  rewrite expnS.
+  apply mulnC.
+Qed.
+
+Lemma exp0n (n : nat) : Is_true (ltn O n) -> expn O n = O.
+Proof.
+  intros hn.
+  destruct n as [|n]; [exact (False_ind _ hn) |].
+  unfold expn.
+  rewrite Nat.pow_0_l by lia.
+  reflexivity.
+Qed.
+
+Lemma exp1n (n : nat) : expn (S O) n = S O.
+Proof. exact (Nat.pow_1_l n). Qed.
+
+Lemma expnD (n m p : nat) : expn n (Nat.add m p) = Nat.mul (expn n m) (expn n p).
+Proof. exact (Nat.pow_add_r n m p). Qed.
+
+Lemma expnMn (n m p : nat) : expn (Nat.mul n m) p = Nat.mul (expn n p) (expn m p).
+Proof. exact (Nat.pow_mul_l n m p). Qed.
+
+Lemma expnM (n m p : nat) : expn n (Nat.mul m p) = expn (expn n m) p.
+Proof. exact (Nat.pow_mul_r n m p). Qed.
+
+Lemma expnAC (n m p : nat) : expn (expn n m) p = expn (expn n p) m.
+Proof.
+  rewrite <- (expnM n m p).
+  rewrite <- (expnM n p m).
+  rewrite mulnC.
+  reflexivity.
+Qed.
+
+Lemma fact0 : factn O = S O.
+Proof. reflexivity. Qed.
+
+Lemma factS (n : nat) : factn (S n) = Nat.mul (S n) (factn n).
+Proof. reflexivity. Qed.
+
+Lemma fact_gt0 (n : nat) : Is_true (gtn (factn n) O).
+Proof.
+  induction n as [|n ih]; [exact I |].
+  simpl.
+  unfold gtn in *.
+  apply istrue_leb_le in ih.
+  apply istrue_leb_le.
+  nia.
+Qed.
+
+Lemma fact_gt1 (n : nat) : Is_true (geq (factn n) (S O)).
+Proof. exact (fact_gt0 n). Qed.
+
+Lemma fact_geq (n : nat) : Is_true (leq n (factn n)).
+Proof.
+  induction n as [|n ih]; [exact I |].
+  unfold leq in *.
+  apply istrue_leb_le in ih.
+  apply istrue_leb_le.
+  simpl.
+  pose proof (fact_gt0 n) as hgt.
+  unfold gtn in hgt.
+  apply istrue_leb_le in hgt.
+  nia.
+Qed.
+
 (* List.lp Disj support *)
 
 Definition list_type (a : Type') : Type' := {| type := Datatypes.list a; el := nil |}.
@@ -741,6 +941,11 @@ Notation list := list_type (only parsing).
 Definition 𝕃 (a : Type') : Type := Datatypes.list a.
 Definition lp_u25a1 (a : Type') : 𝕃 a := nil.
 Definition lp_u2e2c (a : Type') (x : a) (xs : 𝕃 a) : 𝕃 a := cons x xs.
+Definition lp_is_u25a1 (a : Type') (xs : 𝕃 a) : bool :=
+  match xs with
+  | nil => true
+  | cons _ _ => false
+  end.
 
 Definition ind_𝕃 (a : Type') (P : 𝕃 a -> Prop)
     (p_nil : P (lp_u25a1 a))
@@ -764,13 +969,259 @@ Fixpoint lp_u2286 (a : Type') (eqb : a -> a -> bool) (xs ys : 𝕃 a) : bool :=
   | cons x xs' => andb (lp_u2208 a eqb x ys) (lp_u2286 a eqb xs' ys)
   end.
 
+Lemma mem_seq1 (a : Type') (eqb : a -> a -> bool) (x y : a) :
+    lp_u2208 a eqb x (lp_u2e2c a y (lp_u25a1 a)) = eqb x y.
+Proof.
+  simpl.
+  rewrite orb_false_r.
+  reflexivity.
+Qed.
+
+Lemma not_mem_cons_head (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) (y x : a) :
+    ~ Is_true (orb (eqb x y) (lp_u2208 a eqb x xs)) -> ~ Is_true (eqb x y).
+Proof.
+  intros h hx.
+  destruct (eqb x y); simpl in *.
+  - apply h. exact I.
+  - exact hx.
+Qed.
+
+Lemma not_mem_cons_tail (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) (y x : a) :
+    ~ Is_true (orb (eqb x y) (lp_u2208 a eqb x xs)) -> ~ Is_true (lp_u2208 a eqb x xs).
+Proof.
+  intros h hx.
+  destruct (lp_u2208 a eqb x xs); simpl in *.
+  - apply h.
+    destruct (eqb x y); exact I.
+  - exact hx.
+Qed.
+
+Lemma subset_cons_r (a : Type') (eqb : a -> a -> bool) (y : a) (xs ys : 𝕃 a) :
+    Is_true (lp_u2286 a eqb xs ys) ->
+    Is_true (lp_u2286 a eqb xs (lp_u2e2c a y ys)).
+Proof.
+  revert ys.
+  induction xs as [|x xs ih]; intros ys h; simpl; [exact I |].
+  apply bool_istrue_and.
+  split.
+  - apply or_i2.
+    exact (and_e1 (lp_u2208 a eqb x ys) (lp_u2286 a eqb xs ys) h).
+  - apply ih.
+    exact (and_e2 (lp_u2208 a eqb x ys) (lp_u2286 a eqb xs ys) h).
+Qed.
+
+Lemma subset_cons_l (a : Type') (eqb : a -> a -> bool) (x : a) (xs ys : 𝕃 a) :
+    Is_true (andb (lp_u2208 a eqb x ys) (lp_u2286 a eqb xs ys)) ->
+    Is_true (lp_u2286 a eqb xs ys).
+Proof.
+  exact (and_e2 (lp_u2208 a eqb x ys) (lp_u2286 a eqb xs ys)).
+Qed.
+
+Lemma subset_cons (a : Type') (eqb : a -> a -> bool)
+    (eqb_refl : forall x : a, Is_true (eqb x x))
+    (ys xs : 𝕃 a) (x : a) :
+    Is_true (lp_u2286 a eqb xs ys) ->
+    Is_true (andb (orb (eqb x x) (lp_u2208 a eqb x ys))
+      (lp_u2286 a eqb xs (lp_u2e2c a x ys))).
+Proof.
+  intro h.
+  apply bool_istrue_and.
+  split.
+  - apply or_i1.
+    apply eqb_refl.
+  - apply subset_cons_r.
+    exact h.
+Qed.
+
 Definition lp_u002b_u002b (a : Type') (xs ys : 𝕃 a) : 𝕃 a := xs ++ ys.
 Definition size (a : Type') (xs : 𝕃 a) : nat := length xs.
+Definition head (a : Type') (default : a) (xs : 𝕃 a) : a :=
+  match xs with
+  | nil => default
+  | cons x _ => x
+  end.
+Definition behead (a : Type') (xs : 𝕃 a) : 𝕃 a :=
+  match xs with
+  | nil => nil
+  | cons _ ys => ys
+  end.
+Fixpoint eql (a : Type') (eqb : a -> a -> bool) (xs ys : 𝕃 a) : bool :=
+  match xs, ys with
+  | nil, nil => true
+  | cons x xs', cons y ys' => andb (eqb x y) (eql a eqb xs' ys')
+  | _, _ => false
+  end.
+Fixpoint nseq (a : Type') (n : nat) (x : a) : 𝕃 a :=
+  match n with
+  | O => nil
+  | S n' => cons x (nseq a n' x)
+  end.
+Fixpoint ncons (a : Type') (n : nat) (x : a) (xs : 𝕃 a) : 𝕃 a :=
+  match n with
+  | O => xs
+  | S n' => cons x (ncons a n' x xs)
+  end.
+Fixpoint catrev (a : Type') (xs acc : 𝕃 a) : 𝕃 a :=
+  match xs with
+  | nil => acc
+  | cons x xs' => catrev a xs' (cons x acc)
+  end.
+Definition rev (a : Type') (xs : 𝕃 a) : 𝕃 a := catrev a xs nil.
+Fixpoint rcons (a : Type') (xs : 𝕃 a) (x : a) : 𝕃 a :=
+  match xs with
+  | nil => cons x nil
+  | cons y ys => cons y (rcons a ys x)
+  end.
+Fixpoint Arr (n : nat) (a b : Type') : Type :=
+  match n with
+  | O => b
+  | S n' => a -> Arr n' a b
+  end.
+Fixpoint seqn_acc (a : Type') (n : nat) : 𝕃 a -> Arr n a (list_type a) :=
+  match n return 𝕃 a -> Arr n a (list_type a) with
+  | O => fun xs => rev a xs
+  | S n' => fun xs x => seqn_acc a n' (cons x xs)
+  end.
+Fixpoint lp_last (a : Type') (default : a) (xs : 𝕃 a) : a :=
+  match xs with
+  | nil => default
+  | cons x xs' => lp_last a x xs'
+  end.
+Fixpoint belast (a : Type') (default : a) (xs : 𝕃 a) : 𝕃 a :=
+  match xs with
+  | nil => nil
+  | cons x xs' => cons default (belast a x xs')
+  end.
 Definition iota (start len : nat) : 𝕃 nat' := seq start len.
 Definition indexes (a : Type') (xs : 𝕃 a) : 𝕃 nat' := iota O (size a xs).
 Definition lp_nth (a : Type') (default : a) (xs : 𝕃 a) (n : nat) : a :=
   nth n xs default.
 Notation nth := lp_nth (only parsing).
+Fixpoint incr_nth (xs : 𝕃 nat') (n : nat) : 𝕃 nat' :=
+  match xs, n with
+  | nil, O => cons (S O) nil
+  | nil, S n' => cons O (incr_nth nil n')
+  | cons x xs', O => cons (S x) xs'
+  | cons x xs', S n' => cons x (incr_nth xs' n')
+  end.
+Fixpoint zip (a b : Type') (xs : 𝕃 a) (ys : 𝕃 b) : 𝕃 (lp_u00d7 a b) :=
+  match xs, ys with
+  | cons x xs', cons y ys' => cons (lp_u201a a b x y) (zip a b xs' ys')
+  | _, _ => nil
+  end.
+Fixpoint unzip1 (a b : Type') (xs : 𝕃 (lp_u00d7 a b)) : 𝕃 a :=
+  match xs with
+  | nil => nil
+  | cons p ps => cons (lp_u2081 a b p) (unzip1 a b ps)
+  end.
+Fixpoint unzip2 (a b : Type') (xs : 𝕃 (lp_u00d7 a b)) : 𝕃 b :=
+  match xs with
+  | nil => nil
+  | cons p ps => cons (lp_u2082 a b p) (unzip2 a b ps)
+  end.
+
+Lemma nth_zip (a b : Type') (default_a : a) (default_b : b)
+    (xs : 𝕃 a) (ys : 𝕃 b) (n : nat) :
+    size a xs = size b ys ->
+    nth (lp_u00d7 a b) (lp_u201a a b default_a default_b) (zip a b xs ys) n =
+      lp_u201a a b (nth a default_a xs n) (nth b default_b ys n).
+Proof.
+  revert ys n.
+  induction xs as [|x xs ih]; intros ys n h; destruct ys as [|y ys].
+  - destruct n; reflexivity.
+  - simpl in h. discriminate h.
+  - simpl in h. discriminate h.
+  - destruct n as [|n']; simpl; [reflexivity |].
+    apply ih.
+    simpl in h.
+    injection h; auto.
+Qed.
+
+Fixpoint all2 (a b : Type') (p : a -> b -> bool) (xs : 𝕃 a) (ys : 𝕃 b) : bool :=
+  match xs, ys with
+  | nil, nil => true
+  | cons x xs', cons y ys' => andb (p x y) (all2 a b p xs' ys')
+  | _, _ => false
+  end.
+Definition drop (a : Type') (n : nat) (xs : 𝕃 a) : 𝕃 a := skipn n xs.
+Definition take (a : Type') (n : nat) (xs : 𝕃 a) : 𝕃 a := firstn n xs.
+
+Lemma size_drop (a : Type') (xs : 𝕃 a) (n : nat) :
+    size a (drop a n xs) = Nat.sub (size a xs) n.
+Proof.
+  unfold size, drop.
+  apply length_skipn.
+Qed.
+
+Lemma drop_drop (a : Type') (xs : 𝕃 a) (m n : nat) :
+    drop a m (drop a n xs) = drop a (Nat.add m n) xs.
+Proof.
+  unfold drop.
+  apply skipn_skipn.
+Qed.
+
+Lemma take_drop (a : Type') (n m : nat) (xs : 𝕃 a) :
+    take a n (drop a m xs) = drop a m (take a (Nat.add n m) xs).
+Proof.
+  unfold take, drop.
+  rewrite firstn_skipn_comm.
+  rewrite Nat.add_comm.
+  reflexivity.
+Qed.
+
+Lemma takeD (a : Type') (n m : nat) (xs : 𝕃 a) :
+    take a (Nat.add n m) xs =
+      lp_u002b_u002b a (take a n xs) (take a m (drop a n xs)).
+Proof.
+  unfold take, drop, lp_u002b_u002b.
+  revert xs m.
+  induction n as [|n ih]; intros xs m; destruct xs as [|x xs]; simpl; try reflexivity.
+  - destruct m; reflexivity.
+  - rewrite ih.
+    reflexivity.
+Qed.
+
+Lemma takeC (a : Type') (xs : 𝕃 a) (n m : nat) :
+    take a n (take a m xs) = take a m (take a n xs).
+Proof.
+  unfold take.
+  repeat rewrite firstn_firstn.
+  rewrite Nat.min_comm.
+  reflexivity.
+Qed.
+
+Definition rot (a : Type') (n : nat) (xs : 𝕃 a) : 𝕃 a :=
+  lp_u002b_u002b a (drop a n xs) (take a n xs).
+
+Lemma rot0 (a : Type') (xs : 𝕃 a) : rot a O xs = xs.
+Proof.
+  unfold rot, drop, take, lp_u002b_u002b.
+  simpl.
+  apply app_nil_r.
+Qed.
+
+Lemma size_rot (a : Type') (xs : 𝕃 a) (n : nat) :
+    size a (rot a n xs) = size a xs.
+Proof.
+  unfold rot, size, drop, take, lp_u002b_u002b.
+  rewrite length_app.
+  rewrite length_skipn.
+  rewrite length_firstn.
+  lia.
+Qed.
+
+Definition rotr (a : Type') (n : nat) (xs : 𝕃 a) : 𝕃 a :=
+  rot a (Nat.sub (size a xs) n) xs.
+
+Lemma rotr0 (a : Type') (xs : 𝕃 a) : rotr a O xs = xs.
+Proof.
+  unfold rotr, rot, size, drop, take, lp_u002b_u002b.
+  rewrite Nat.sub_0_r.
+  rewrite skipn_all.
+  rewrite firstn_all.
+  reflexivity.
+Qed.
+
 Fixpoint nths (a : Type') (default : a) (xs : 𝕃 a) (ns : 𝕃 nat') : 𝕃 a :=
   match ns with
   | nil => nil
@@ -798,6 +1249,179 @@ Fixpoint undup_first (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) : 𝕃 a :
   | cons x xs' =>
       cons x (filter (fun y => negb (eqb x y)) (undup_first a eqb xs'))
   end.
+
+Lemma catrev_cat (a : Type') (xs ys : 𝕃 a) :
+    catrev a xs ys = lp_u002b_u002b a (rev a xs) ys.
+Proof.
+  unfold rev, lp_u002b_u002b.
+  revert ys.
+  induction xs as [|x xs ih]; intros ys; simpl; [reflexivity |].
+  rewrite ih.
+  rewrite (ih (cons x nil)).
+  rewrite <- app_assoc.
+  reflexivity.
+Qed.
+
+Lemma rev_cons (a : Type') (xs : 𝕃 a) (x : a) :
+    rev a (lp_u2e2c a x xs) = lp_u002b_u002b a (rev a xs) (lp_u2e2c a x (lp_u25a1 a)).
+Proof.
+  unfold rev.
+  simpl.
+  rewrite catrev_cat.
+  reflexivity.
+Qed.
+
+Lemma rev_eq_std (a : Type') (xs : 𝕃 a) : rev a xs = List.rev xs.
+Proof.
+  induction xs as [|x xs ih]; [reflexivity |].
+  unfold rev.
+  simpl.
+  rewrite catrev_cat.
+  unfold lp_u002b_u002b.
+  rewrite ih.
+  reflexivity.
+Qed.
+
+Lemma rev_cat (a : Type') (xs ys : 𝕃 a) :
+    rev a (lp_u002b_u002b a xs ys) = lp_u002b_u002b a (rev a ys) (rev a xs).
+Proof.
+  unfold lp_u002b_u002b.
+  repeat rewrite rev_eq_std.
+  apply rev_app_distr.
+Qed.
+
+Lemma rev_idem (a : Type') (xs : 𝕃 a) : rev a (rev a xs) = xs.
+Proof.
+  rewrite rev_eq_std.
+  rewrite rev_eq_std.
+  apply rev_involutive.
+Qed.
+
+Lemma size_rev (a : Type') (xs : 𝕃 a) : size a (rev a xs) = size a xs.
+Proof.
+  unfold size.
+  rewrite rev_eq_std.
+  apply length_rev.
+Qed.
+
+Lemma cats1 (a : Type') (xs : 𝕃 a) (x : a) :
+    lp_u002b_u002b a xs (lp_u2e2c a x (lp_u25a1 a)) = rcons a xs x.
+Proof.
+  induction xs as [|y ys ih]; simpl; [reflexivity |].
+  rewrite ih.
+  reflexivity.
+Qed.
+
+Lemma rcons_cons (a : Type') (x : a) (xs : 𝕃 a) (z : a) :
+    rcons a (lp_u2e2c a x xs) z = lp_u2e2c a x (rcons a xs z).
+Proof. reflexivity. Qed.
+
+Fixpoint index (a : Type') (eqb : a -> a -> bool) (x : a) (xs : 𝕃 a) : nat :=
+  match xs with
+  | nil => O
+  | cons y ys => if eqb x y then O else S (index a eqb x ys)
+  end.
+
+Lemma index_size (a : Type') (eqb : a -> a -> bool) (x : a) (xs : 𝕃 a) :
+    Is_true (leq (index a eqb x xs) (size a xs)).
+Proof.
+  induction xs as [|y ys ih]; simpl; [exact I |].
+  destruct (eqb x y); simpl; [exact I | exact ih].
+Qed.
+
+Lemma index_head (a : Type') (eqb : a -> a -> bool) (x : a) (xs : 𝕃 a) :
+    eqb x x = true -> index a eqb x (lp_u2e2c a x xs) = O.
+Proof.
+  intro h.
+  simpl.
+  rewrite h.
+  reflexivity.
+Qed.
+
+Fixpoint has (a : Type') (p : a -> bool) (xs : 𝕃 a) : bool :=
+  match xs with
+  | nil => false
+  | cons x xs' => if p x then true else has a p xs'
+  end.
+Fixpoint list_all (a : Type') (p : a -> bool) (xs : 𝕃 a) : bool :=
+  match xs with
+  | nil => true
+  | cons x xs' => if p x then list_all a p xs' else false
+  end.
+Fixpoint find (a : Type') (p : a -> bool) (xs : 𝕃 a) : nat :=
+  match xs with
+  | nil => O
+  | cons x xs' => if p x then O else S (find a p xs')
+  end.
+
+Lemma find_size (a : Type') (p : a -> bool) (xs : 𝕃 a) :
+    Is_true (leq (find a p xs) (size a xs)).
+Proof.
+  induction xs as [|x xs ih]; simpl; [exact I |].
+  destruct (p x); simpl; [exact I | exact ih].
+Qed.
+
+Fixpoint count (a : Type') (p : a -> bool) (xs : 𝕃 a) : nat :=
+  match xs with
+  | nil => O
+  | cons x xs' => if p x then S (count a p xs') else count a p xs'
+  end.
+
+Lemma count_size (a : Type') (p : a -> bool) (xs : 𝕃 a) :
+    Is_true (leq (count a p xs) (size a xs)).
+Proof.
+  induction xs as [|x xs ih]; simpl; [exact I |].
+  destruct (p x); simpl.
+  - exact ih.
+  - destruct (leq (count a p xs) (size a xs)) eqn:eih; [| exfalso; exact ih].
+    destruct (leq (count a p xs) (S (size a xs))) eqn:e; [exact I |].
+    apply Nat.leb_le in eih.
+    apply Nat.leb_gt in e.
+    lia.
+Qed.
+
+Fixpoint is_constant (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) : bool :=
+  match xs with
+  | nil => true
+  | cons x xs' => if list_all a (eqb x) xs' then true else false
+  end.
+Fixpoint uniq (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) : bool :=
+  match xs with
+  | nil => true
+  | cons x xs' => if negb (lp_u2208 a eqb x xs') then uniq a eqb xs' else false
+  end.
+Fixpoint subseq (a : Type') (eqb : a -> a -> bool) (xs ys : 𝕃 a) : bool :=
+  match xs, ys with
+  | nil, nil => true
+  | cons _ _, nil => false
+  | nil, cons _ _ => false
+  | cons x xs', cons y ys' => if eqb x y then subseq a eqb xs' ys' else false
+  end.
+Definition is_prefix (a : Type') (eqb : a -> a -> bool) (xs ys : 𝕃 a) : bool :=
+  subseq a eqb xs (take a (size a xs) ys).
+Fixpoint list_eq (a : Type') (eqb : a -> a -> bool) (xs ys : 𝕃 a) : bool :=
+  eql a eqb xs ys.
+Fixpoint infix_index (a : Type') (eqb : a -> a -> bool) (needle haystack : 𝕃 a) : nat :=
+  match haystack with
+  | nil => if list_eq a eqb needle nil then O else S O
+  | cons _ hs' =>
+      if list_eq a eqb needle (take a (size a needle) haystack)
+      then O
+      else S (infix_index a eqb needle hs')
+  end.
+Definition is_infix (a : Type') (eqb : a -> a -> bool) (needle haystack : 𝕃 a) : bool :=
+  Nat.leb (infix_index a eqb needle haystack) (size a haystack).
+Definition lp_filter (a : Type') (p : a -> bool) (xs : 𝕃 a) : 𝕃 a := filter p xs.
+Fixpoint undup (a : Type') (eqb : a -> a -> bool) (xs : 𝕃 a) : 𝕃 a :=
+  match xs with
+  | nil => nil
+  | cons x xs' =>
+      let rest := undup a eqb xs' in
+      if lp_u2208 a eqb x rest then rest else cons x rest
+  end.
+Definition lp_map (a b : Type') (f : a -> b) (xs : 𝕃 a) : 𝕃 b := map f xs.
+Definition sumn (xs : 𝕃 nat') : nat := fold_right Nat.add O xs.
+Definition prodn (xs : 𝕃 nat') : nat := fold_right Nat.mul (S O) xs.
 
 Definition mem_head (a : Type') (eqb : a -> a -> bool) (x : a) (xs : 𝕃 a) :
     eqb x x = true -> Is_true (orb (eqb x x) (lp_u2208 a eqb x xs)).
@@ -858,13 +1482,72 @@ Lemma indexes_decrement (a : Type') (n : nat) (x : a) (xs : 𝕃 a) :
   Is_true (lp_u2208 nat' eqn n (iota O (size a xs))).
 Proof. apply iota_decrement. Qed.
 
+Lemma mem_to_In (a : Type') (eqb : a -> a -> bool)
+    (eqb_correct : forall x y, Is_true (eqb x y) -> x = y)
+    (x : a) (xs : 𝕃 a) :
+    Is_true (lp_u2208 a eqb x xs) -> In x xs.
+Proof.
+  induction xs as [|y ys ih]; simpl; intro h; [exact (False_ind _ h) |].
+  apply or_istrue in h.
+  destruct h as [h | h].
+  - left. symmetry. apply eqb_correct. exact h.
+  - right. apply ih. exact h.
+Qed.
+
+Lemma In_to_mem (a : Type') (eqb : a -> a -> bool)
+    (eqb_refl : forall x, Is_true (eqb x x))
+    (x : a) (xs : 𝕃 a) :
+    In x xs -> Is_true (lp_u2208 a eqb x xs).
+Proof.
+  induction xs as [|y ys ih]; simpl; intro h; [contradiction |].
+  destruct h as [h | h].
+  - subst y. apply bool_istrue_or. left. apply eqb_refl.
+  - apply bool_istrue_or. right. apply ih. exact h.
+Qed.
+
+Lemma In_to_subset (a : Type') (eqb : a -> a -> bool)
+    (eqb_refl : forall x, Is_true (eqb x x))
+    (xs ys : 𝕃 a) :
+    (forall x, In x xs -> In x ys) ->
+    Is_true (lp_u2286 a eqb xs ys).
+Proof.
+  induction xs as [|x xs ih]; simpl; intro hsub; [exact I |].
+  apply bool_istrue_and.
+  split.
+  - apply (In_to_mem a eqb eqb_refl).
+    apply hsub. left. reflexivity.
+  - apply ih.
+    intros y hy.
+    apply hsub. right. exact hy.
+Qed.
+
+Lemma In_undup_first (a : Type') (eqb : a -> a -> bool)
+    (eqb_correct : forall x y, Is_true (eqb x y) -> x = y)
+    (x : a) (xs : 𝕃 a) :
+    In x xs -> In x (undup_first a eqb xs).
+Proof.
+  induction xs as [|y ys ih]; simpl; intro h; [contradiction |].
+  destruct h as [h | h].
+  - subst y. left. reflexivity.
+  - destruct (eqb y x) eqn:hyx.
+    + left. apply eqb_correct. rewrite hyx. exact I.
+    + right. apply filter_In. split.
+      * apply ih. exact h.
+      * rewrite hyx. reflexivity.
+Qed.
+
 Lemma subset_undup_first (a : Type') (eqb : a -> a -> bool)
     (eqb_correct : forall x y, Is_true (eqb x y) -> x = y)
     (eqb_refl : forall x, Is_true (eqb x x))
     (eqb_sym : forall x y, Is_true (eqb x y) -> Is_true (eqb y x))
     (xs : 𝕃 a) :
     Is_true (lp_u2286 a eqb xs (undup_first a eqb xs)).
-Admitted.
+Proof.
+  apply (In_to_subset a eqb eqb_refl).
+  intros x hx.
+  apply (In_undup_first a eqb eqb_correct).
+  exact hx.
+Qed.
 
 (* Disj.lp/Conj.lp shim *)
 

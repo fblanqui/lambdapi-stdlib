@@ -16,4 +16,6 @@ make partial-stdlib
 
 The files are generated/curated outputs from the current pipeline, not hand-maintained source files. `Bool.v` and `Nat.v` are currently shim-backed modules: most of their usable content lives in `mappings.v` because the direct translated proof terms rely on Lambdapi/Dedukti rewrite-rule computation that native Rocq does not reproduce definitionally.
 
+The full `List.v` translation is not included in this checked snapshot yet. The root support files already contain a larger List shim, but the complete generated List file still has proof-term failures, currently around `size_filter`.
+
 This directory contains its own copy of `mappings.v` so the snapshot can be checked directly with the local `order.txt`. The root `rocq/mappings.v`, `rocq/mappings.lp`, and `rocq/encoding.lp` are the support files used to reproduce or update this kind of output.
