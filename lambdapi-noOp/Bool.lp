@@ -1,6 +1,6 @@
 /* Library on booleans. */
 
-require open Stdlib.FOL Stdlib.Eq;
+require open Stdlib-noOp.FOL Stdlib-noOp.Eq;
 
 inductive 𝔹 : TYPE ≔ // `dB or \BbbB
 | true : 𝔹
@@ -12,14 +12,14 @@ rule τ bool ↪ 𝔹;
 
 // induction principle with equalities
 
-opaque symbol case_𝔹 b : π (b = true ∨ b = false) ≔
+ symbol case_𝔹 b : π (b = true ∨ b = false) ≔
 begin
   induction
   { apply ∨ᵢ₁; reflexivity; }
   { apply ∨ᵢ₂; reflexivity; }
 end;
 
-opaque symbol ind_𝔹_eq p b:
+ symbol ind_𝔹_eq p b:
  (π(b = true) → π(p b)) → (π(b = false) → π(p b)) → π(p b) ≔
 begin
   assume p b t f; refine ∨ₑ (case_𝔹 b) t f;
@@ -34,7 +34,7 @@ with istrue false ↪ ⊥;
 
 coerce_rule coerce 𝔹 Prop $x ↪ istrue $x;
 
-opaque symbol istrue=true [x] : π (istrue x) → π (x = true) ≔
+ symbol istrue=true [x] : π (istrue x) → π (x = true) ≔
 begin
   assume x h;
   refine ∨ₑ (case_𝔹 x) _ _
@@ -44,7 +44,7 @@ begin
       refine ⊥ₑ H1 };
 end;
 
-opaque symbol true=istrue [x] : π (x = true) → π (istrue x) ≔
+ symbol true=istrue [x] : π (x = true) → π (istrue x) ≔
 begin
   assume x h;
   refine ∨ₑ (case_𝔹 x) _ _
@@ -52,7 +52,7 @@ begin
       { assume h1; rewrite h; refine ⊤ᵢ}
 end;
 
-opaque symbol ¬istrue=false [x : 𝔹]: 
+ symbol ¬istrue=false [x : 𝔹]: 
     π (¬ x) → π (x = false) ≔
 begin
   assume x h;
@@ -61,7 +61,7 @@ begin
       { assume h1; refine h1};
 end;
 
-opaque symbol false=¬istrue [x : 𝔹]: 
+ symbol false=¬istrue [x : 𝔹]: 
     π (x = false) → π (¬ x) ≔
 begin
   assume x h0; rewrite h0; 
@@ -71,12 +71,12 @@ end;
 
 // non confusion of constructors
 
-opaque symbol false≠true : π (false ≠ true) ≔
+ symbol false≠true : π (false ≠ true) ≔
 begin
   assume h; refine ind_eq h istrue ⊤ᵢ
 end;
 
-opaque symbol true≠false : π (true ≠ false) ≔
+ symbol true≠false : π (true ≠ false) ≔
 begin
   assume h; apply false≠true; symmetry; apply h
 end;
@@ -88,7 +88,7 @@ symbol not : 𝔹 → 𝔹;
 rule not true  ↪ false
 with not false ↪ true;
 
-opaque symbol ¬_istrue [p: 𝔹]: 
+ symbol ¬_istrue [p: 𝔹]: 
     π(¬ p) → π(not p) ≔
 begin
   induction
@@ -96,7 +96,7 @@ begin
   { simplify; assume h; refine ⊤ᵢ }
 end;
 
-opaque symbol istrue_not [p: 𝔹]: 
+ symbol istrue_not [p: 𝔹]: 
     π(not p) → π(¬ p)≔
 begin
   induction
@@ -115,35 +115,35 @@ with _     or true  ↪ true
 with false or $b    ↪ $b
 with $b    or false ↪ $b;
 
-opaque symbol ∨_istrue [p q : 𝔹] : π(p or q) → π(p ∨ q) ≔
+ symbol ∨_istrue [p q : 𝔹] : π(p or q) → π(p ∨ q) ≔
 begin
   induction
   { assume q h; apply ∨ᵢ₁; apply ⊤ᵢ; }
   { assume q h; apply ∨ᵢ₂; apply h; }
 end;
 
-opaque symbol istrue_or [p q : 𝔹] : π(p ∨ q) → π(p or q) ≔
+ symbol istrue_or [p q : 𝔹] : π(p ∨ q) → π(p or q) ≔
 begin
   induction
   { assume q h; apply ⊤ᵢ; }
   { assume q h; apply ∨ₑ h { assume i; apply ⊥ₑ i; } { assume i; apply i; } }
 end;
 
-opaque symbol orᵢ₁ [p : 𝔹] q : π p → π (p or q) ≔
+ symbol orᵢ₁ [p : 𝔹] q : π p → π (p or q) ≔
 begin
   induction
   { simplify; assume b h; apply ⊤ᵢ }
   { simplify; assume b h; apply ⊥ₑ h }
 end;
 
-opaque symbol orᵢ₂ p [q : 𝔹] : π q → π (p or q) ≔
+ symbol orᵢ₂ p [q : 𝔹] : π q → π (p or q) ≔
 begin
   induction
   { simplify; assume b h; apply ⊤ᵢ }
   { simplify; assume b h; apply h }
 end;
 
-opaque symbol orₑ [p q : 𝔹] (r : 𝔹) :
+ symbol orₑ [p q : 𝔹] (r : 𝔹) :
   π (p or q) → (π p → π r) → (π q → π r) → π r ≔
 begin
   assume p q r pq pr qr;
@@ -151,14 +151,14 @@ begin
   apply ∨ₑ h pr qr;
 end;
 
-opaque symbol orC p q : π (p or q = q or p) ≔
+ symbol orC p q : π (p or q = q or p) ≔
 begin
     induction
     { reflexivity; }
     { reflexivity; }
 end;
 
-opaque symbol orA p q r : π ((p or q) or r = p or (q or r)) ≔
+ symbol orA p q r : π ((p or q) or r = p or (q or r)) ≔
 begin
     induction
     { reflexivity; }
@@ -176,7 +176,7 @@ with $b    and true  ↪ $b
 with false and _     ↪ false
 with _     and false ↪ false;
 
-opaque symbol ∧_istrue [p q : 𝔹] : π(p and q) → π(p ∧ q) ≔
+ symbol ∧_istrue [p q : 𝔹] : π(p and q) → π(p ∧ q) ≔
 begin
   induction
   { induction
@@ -186,26 +186,26 @@ begin
   { assume q h; apply ⊥ₑ h; }
 end;
 
-opaque symbol istrue_and [p q : 𝔹] : π(p ∧ q) → π(p and q) ≔
+ symbol istrue_and [p q : 𝔹] : π(p ∧ q) → π(p and q) ≔
 begin
   induction
   { assume q h; apply ∧ₑ₂ h; }
   { assume q h; apply ∧ₑ₁ h; }
 end;
 
-opaque symbol andᵢ [p q : 𝔹] : π p → π q → π(p and q) ≔
+ symbol andᵢ [p q : 𝔹] : π p → π q → π(p and q) ≔
 begin
   assume p q h i; apply @istrue_and p q; apply ∧ᵢ h i;
 end;
 
-opaque symbol andₑ₁ [p q : 𝔹] : π (p and q) → π p ≔
+ symbol andₑ₁ [p q : 𝔹] : π (p and q) → π p ≔
 begin
   induction
   { assume q i; apply ⊤ᵢ; }
   { assume q i; apply i; }
 end;
 
-opaque symbol andₑ₂ [p q : 𝔹] : π (p and q) → π q ≔
+ symbol andₑ₂ [p q : 𝔹] : π (p and q) → π q ≔
 begin
   induction
   { assume q i; apply i; }

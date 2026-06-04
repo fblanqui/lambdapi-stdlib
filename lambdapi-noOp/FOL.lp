@@ -1,6 +1,6 @@
 // (multi-sorted) First-order logic
 
-require open Stdlib.Set Stdlib.Prop;
+require open Stdlib-noOp.Set Stdlib-noOp.Prop;
 
 // Universal quantification
 
@@ -28,7 +28,7 @@ rule ∃ₑ (∃ᵢ $x $px) $f ↪ $f $x $px;
 
 // properties
 
-opaque symbol ¬∃ [a] p : π (¬ (`∃ x, p x) ⇒ `∀ x : τ a, ¬ (p x)) ≔
+ symbol ¬∃ [a] p : π (¬ (`∃ x, p x) ⇒ `∀ x : τ a, ¬ (p x)) ≔
 begin
 assume a p not_ex_p x px; apply not_ex_p; apply ∃ᵢ x px
 end;

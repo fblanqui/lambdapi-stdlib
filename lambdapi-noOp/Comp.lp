@@ -2,7 +2,7 @@
 
 By Quentin Garchery (May 2021). */
 
-require open Stdlib.Bool;
+require open Stdlib-noOp.Bool;
 
 inductive Comp : TYPE ≔
 | Eq : Comp
@@ -49,17 +49,17 @@ with isGe Gt ↪ true;
 
 // Discriminate constructors
 
-opaque symbol Lt≠Eq : π (Lt ≠ Eq) ≔
+ symbol Lt≠Eq : π (Lt ≠ Eq) ≔
 begin
   assume h; refine ind_eq h (λ n, istrue(isEq n)) ⊤ᵢ
 end;
 
-opaque symbol Gt≠Eq : π (Gt ≠ Eq) ≔
+ symbol Gt≠Eq : π (Gt ≠ Eq) ≔
 begin
   assume h; refine ind_eq h (λ n, istrue(isEq n)) ⊤ᵢ
 end;
 
-opaque symbol Gt≠Lt : π (Gt ≠ Lt) ≔
+ symbol Gt≠Lt : π (Gt ≠ Lt) ≔
 begin
   assume h; refine ind_eq h (λ n, istrue(isLt n)) ⊤ᵢ
 end;
@@ -72,7 +72,7 @@ rule opp Eq ↪ Eq
 with opp Lt ↪ Gt
 with opp Gt ↪ Lt;
 
-opaque symbol opp_idem c : π (opp (opp c) = c) ≔
+ symbol opp_idem c : π (opp (opp c) = c) ≔
 begin
   induction { reflexivity; } { reflexivity; } { reflexivity; }
 end;

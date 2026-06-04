@@ -1,2 +1,3 @@
 -R . Stdlib
+-Q partial_stdlib ""
 .
