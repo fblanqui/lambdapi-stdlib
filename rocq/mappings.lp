@@ -1,4 +1,4 @@
-// Prop.lp
+// Prop
 builtin "Prop" ≔ Prop;
 builtin "True" ≔ ⊤;
 builtin "I" ≔ ⊤ᵢ;
@@ -18,25 +18,28 @@ builtin "ex_intro" ≔ ∃ᵢ;
 builtin "ex_elim" ≔ ∃ₑ;
 builtin "iff" ≔ ⇔;
 
-// Set.lp
+// Set
 builtin "Type'" ≔ Set;
 builtin "nat" ≔ ι;
 builtin "el" ≔ el;
 
-// FOL.lp
+// Prod
+builtin "prod" ≔ ×;
+
+// FOL
 builtin "all" ≔ ∀;
 builtin "ex" ≔ ∃;
 
-// HOL.lp
+// HOL
 builtin "arr" ≔ ⤳;
 
-// Eq.lp
+// Eq
 builtin "eq" ≔ =;
 builtin "eq_refl" ≔ eq_refl;
 builtin "ind_eq" ≔ ind_eq;
 builtin "neq" ≔ ≠;
 
-//Bool.lp
+// Bool
 builtin "bool'" ≔ 𝔹;
 builtin "bool'" ≔ bool;
 builtin "Is_true" ≔ istrue;
@@ -45,10 +48,10 @@ builtin "orb" ≔ or;
 builtin "andb" ≔ and;
 builtin "if'" ≔ if;
 
-//Classic.lp
+// Classic
 builtin "classic" ≔ em; 
 
-//Comp.lp
+// Comp
 builtin "comparison'" ≔ comp;
 builtin "comparison'" ≔ Comp;
 builtin "CompOpp" ≔ opp;
@@ -57,7 +60,16 @@ builtin "isLt" ≔ isLt;
 builtin "isGT" ≔ isGT;
 builtin "case_Comp" ≔ case_Comp;
 
-//Epsilon.lp
+// Epsilon
 builtin "eps" ≔  ε;
 builtin "eps_spec" ≔  εᵢ;
 
+// Nat
+builtin "nat" ≔ ℕ;
+
+// List
+builtin "List" ≔ 𝕃;
+builtin "nil" ≔ □;
+builtin "cons" ≔ ⸬;
+builtin "List.In" ≔ ∈;
+builtin "app" ≔ ++;
