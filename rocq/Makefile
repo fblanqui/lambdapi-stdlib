@@ -1,21 +1,50 @@
-LPFILES := $(wildcard ../*.lp)
-VFILES := $(LPFILES:../%.lp=%.v)
-VOFILES := $(VFILES:%=%o)
+.PREFIX:
 
 .PHONY: default
 default:
+	$(MAKE) dk
 	$(MAKE) v
 	$(MAKE) vo
+
+LPFILES := $(wildcard ../*.lp)
+DKFILES := $(LPFILES:../%.lp=%.dk)
+
+.PHONY: dk
+dk: $(DKFILES)
+
+%.dk: ../%.lp
+	lambdapi export -o dk $< > $@
+
+.PHONY: clean-dk
+clean-dk: clean-dko clean-v
+	-rm -f $(DKFILES) dko.mk
+
+.PHONY: dko
+dko: $(DKFILES:%.dk=%.dko)
+
+%.dko: %.dk
+	dk check -e $<
+
+include dko.mk
+
+dko.mk: $(DKFILES)
+	dk dep $(DKFILES) > $@
+
+.PHONY: clean-dko
+clean-dko:
+	-rm -f *.dko
+
+VFILES := $(DKFILES:%.dk=%.v)
 
 .PHONY: v
 v: $(VFILES)
 
-%.v: encoding.lp mappings.lp ../%.lp
-	lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mappings.lp --requiring mappings --use-notations ../$*.lp > $@
+%.v: encoding.lp mapping.lp renaming.lp %.dk
+	lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations $*.dk > $@
 
 .PHONY: clean-v
 clean-v: clean-vo
-	rm -f $(VFILES)
+	-rm -f $(VFILES) rocq.mk rocq.mk.conf *.glob
 
 rocq.mk: _CoqProject
 	rocq makefile -f _CoqProject -o $@
@@ -29,5 +58,4 @@ clean-vo:
 	rm -f *.vo*
 
 .PHONY: clean
-clean: clean-v
-	rm -f rocq.mk rocq.mk.conf *.glob
+clean: clean-dk

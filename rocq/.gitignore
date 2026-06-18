@@ -6,3 +6,6 @@
 rocq.mk
 rocq.mk.conf
 .rocq.mk.d
+*.dk*
+dko.mk
+
