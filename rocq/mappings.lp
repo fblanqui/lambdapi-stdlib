@@ -25,6 +25,9 @@ builtin "el" ≔ el;
 
 // Prod
 builtin "prod" ≔ ×;
+builtin "pair" ≔ ‚;
+builtin "fst" ≔ ₁;
+builtin "snd" ≔ ₂;
 
 // FOL
 builtin "all" ≔ ∀;
@@ -61,11 +64,19 @@ builtin "isGT" ≔ isGT;
 builtin "case_Comp" ≔ case_Comp;
 
 // Epsilon
-builtin "eps" ≔  ε;
-builtin "eps_spec" ≔  εᵢ;
+builtin "eps" ≔ ε;
+builtin "eps_spec" ≔ εᵢ;
 
 // Nat
 builtin "nat" ≔ ℕ;
+builtin "O" ≔ _0;
+builtin "S" ≔ +1;
+builtin "Nat.add" ≔ +;
+builtin "Nat.sub" ≔ -;
+builtin "Nat.pred" ≔ ∸1;
+builtin "Nat.mul" ≔ *;
+builtin "Nat.leb" ≔ ≤;
+builtin "Nat.ltb" ≔ <;
 
 // List
 builtin "List" ≔ 𝕃;
@@ -73,3 +84,41 @@ builtin "nil" ≔ □;
 builtin "cons" ≔ ⸬;
 builtin "List.In" ≔ ∈;
 builtin "app" ≔ ++;
+
+// Pos
+builtin "positive" ≔ ℙ;
+builtin "xI" ≔ I;
+builtin "xO" ≔ O;
+builtin "xH" ≔ H;
+
+// Z
+builtin "Z" ≔ ℤ;
+builtin "Z0" ≔ Z0;
+builtin "Zpos" ≔ Zpos;
+builtin "Zneg" ≔ Zneg;
+builtin "Z.opp" ≔ —;
+builtin "Z.compare" ≔ ≐;
+
+// Tactic
+builtin "(*#admit*)" ≔ #admit;
+builtin "(*&*)" ≔ &;
+builtin "(*#apply*)" ≔ #apply;
+builtin "(*#assume*)" ≔ #assume;
+builtin "(*#fail*)" ≔ #fail;
+builtin "(*#generalize*)" ≔ #generalize;
+builtin "(*#have*)" ≔ #have;
+builtin "(*#induction*)" ≔ #induction;
+builtin "(*#orelse*)" ≔ #orelse;
+builtin "(*#refine*)" ≔ #refine;
+builtin "(*#reflexivity*)" ≔ #reflexivity;
+builtin "(*#remove*)" ≔ #remove;
+builtin "(*#repeat*)" ≔ #repeat;
+builtin "(*#rewrite*)" ≔ #rewrite;
+builtin "(*#set*)" ≔ #set;
+builtin "(*#simplify*)" ≔ #simplify;
+builtin "(*#simplify_beta*)" ≔ #simplify_beta;
+builtin "(*#solve*)" ≔ #solve;
+builtin "(*#symetry*)" ≔ #symmetry;
+builtin "(*#try*)" ≔ #try;
+builtin "(*#why3*)" ≔ #why3;
+builtin "(*#change*)" ≔ #change;
