@@ -3,6 +3,7 @@
 .PHONY: default
 default:
 	$(MAKE) dk
+	$(MAKE) dko
 	$(MAKE) v
 	$(MAKE) vo
 
@@ -22,8 +23,11 @@ clean-dk: clean-dko clean-v
 .PHONY: dko
 dko: $(DKFILES:%.dk=%.dko)
 
+#DKCHECK := dk check -e
+DKCHECK := lambdapi check -c --lib-root=.
+
 %.dko: %.dk
-	dk check -e $<
+	$(DKCHECK) $<
 
 include dko.mk
 
