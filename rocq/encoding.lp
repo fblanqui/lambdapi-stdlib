@@ -1,15 +1,14 @@
 // symbols used for encoding simple type theory
 
-builtin "El" ≔ {|τ|};
-builtin "Prf" ≔ {|π|};
-
-builtin "Set" ≔ Set;
-builtin "prop" ≔ Prop;
-builtin "arr" ≔ {|⤳|};
-builtin "imp" ≔ {|⇒|};
-builtin "all" ≔ {|∀|};
-builtin "eq" ≔ =;
-builtin "or" ≔ {|∨|};
-builtin "and" ≔ {|∧|};
-builtin "ex" ≔ {|∃|};
-builtin "not" ≔ {|¬|};
+builtin "Set" ≔ Set.Set;
+builtin "El" ≔ Set.{|τ|};
+builtin "arr" ≔ Set.{|⤳|};
+builtin "prop" ≔ Prop.Prop;
+builtin "Prf" ≔ Prop.{|π|};
+builtin "imp" ≔ Prop.{|⇒|};
+builtin "not" ≔ Prop.{|¬|};
+builtin "or" ≔ Prop.{|∨|};
+builtin "and" ≔ Prop.{|∧|};
+builtin "eq" ≔ Eq.=;
+builtin "all" ≔ FOL.{|∀|};
+builtin "ex" ≔ FOL.{|∃|};

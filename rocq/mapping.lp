@@ -37,7 +37,7 @@ builtin "ex" ≔ FOL.{|∃|};
 builtin "arr" ≔ HOL.{|⤳|};
 
 // Eq
-builtin "eq" ≔ Eq.=;
+builtin "eq" ≔ Eq.{|=|};
 builtin "eq_refl" ≔ Eq.eq_refl;
 builtin "ind_eq" ≔ Eq.ind_eq;
 builtin "neq" ≔ Eq.{|≠|};

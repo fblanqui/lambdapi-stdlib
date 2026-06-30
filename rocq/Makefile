@@ -2,18 +2,30 @@
 
 .PHONY: default
 default:
+	$(MAKE) lp
 	$(MAKE) dk
 	$(MAKE) dko
 	$(MAKE) v
 	$(MAKE) vo
 
 LPFILES := $(wildcard ../*.lp)
+
+.PHONY: lp
+lp: $(LPFILES:../%.lp=%.lp)
+
+%.lp: ../%.lp
+	sed -e 's/^opaque //' $< > $@
+
+.PHONY: clean-lp
+clean-lp: clean-dk
+	-rm -f $(LPFILES)
+
 DKFILES := $(LPFILES:../%.lp=%.dk)
 
 .PHONY: dk
 dk: $(DKFILES)
 
-%.dk: ../%.lp
+%.dk: %.lp
 	lambdapi export -o dk $< > $@
 
 .PHONY: clean-dk
@@ -56,6 +68,9 @@ rocq.mk: _CoqProject
 .PHONY: vo
 vo: rocq.mk
 	$(MAKE) -f rocq.mk
+
+%.vo: rocq.mk
+	$(MAKE) -f rocq.mk $@
 
 .PHONY: clean-vo
 clean-vo:
