@@ -9,3 +9,25 @@ rocq.mk.conf
 *.dk*
 dko.mk
 
+Bool.lp
+Classic.lp
+Comp.lp
+Conj.lp
+Disj.lp
+Epsilon.lp
+Eq.lp
+FOL.lp
+FunExt.lp
+HOL.lp
+Impred.lp
+List.lp
+Nat.lp
+Option.lp
+Pos.lp
+Prod.lp
+PropExt.lp
+Prop.lp
+Set.lp
+String.lp
+Tactic.lp
+Z.lp
