@@ -1808,7 +1808,7 @@ end;
 
 // enable parsing of natural numbers in decimal notation
 
-builtin "0"  ≔ _0;
+builtin "0" ≔ _0;
 builtin "1" ≔ _1;
 builtin "2" ≔ _2;
 builtin "3" ≔ _3;
