@@ -1,7 +1,16 @@
-/* n-ary functions and relations
+/* N-ary functions and relations
 
 following "Generic Level Polymorphic N-ary Functions" by Guillaume
-Allais (TyDe 2019). */
+Allais (TyDe 2019).
+
+This API provides n-ary functions which automatically reconstruct the
+representation of their inputs' types by unification. It helps to
+define fully level polymorphic n-ary versions of congruence,
+substitution and the combinators for indexed families, that are used
+by programs such as SMT solvers. Lemmas provided in the rest of the
+library such as `Eq.lp` are implemented for fixed arities, and the
+implementation here aims to provide similar lemmas for N-ary
+combinators. */
 
 require open Stdlib.HOL Stdlib.Nat;
 
@@ -12,9 +21,17 @@ inductive VSet : ℕ → TYPE ≔
 
 notation ▹ infix right 10;
 
+// head
+symbol hd [n] : VSet (n +1) → Set;
+rule hd ($a ▹ _) ↪ $a;
+
+unif_rule hd [$n] $x ≡ $y ↪ [$x ≡ @▹ $y $n _];
+
 // tail
 symbol tl [n] : VSet (n +1) → VSet n;
 rule tl (_ ▹ $ts) ↪ $ts;
+
+unif_rule tl [$n] $x ≡ $y ↪ [$x ≡ @▹ _ $n $y];
 
 // constant vector
 injective symbol vcst n (t : Set) : VSet n;
@@ -24,41 +41,52 @@ with vcst ($n +1) $t ↪ $t ▹ vcst $n $t;
 // type code of n-ary functions: fun (a₁ ▹ … ▹ aₙ ▹ ◃) b ≡ a₁ ⤳ … ⤳ aₙ ⤳ b
 symbol fun [n] : VSet n → Set → Set;
 rule fun ◃ $b ↪ $b
-with fun ($t ▹ $ts) $b ↪ $t ⤳ fun $ts $b;
+with fun ($t ▹ $ts) $b ↪ $t ⤳ fun $ts $b
+with fun [0] _ $b ↪ $b
+with fun [_ +1] $ts $b ↪ hd $ts ⤳ fun (tl $ts) $b;
 
-// fun is not injective, however (fun d) and (fun _ b) are both injective
-// we can therefore safely add the following unification rules:
+// fun is not injective, however (λ b,fun d b) (for a fixed d) and (λ
+// d,fun d b) (for a fixed b) are both injective. Therefore, we can
+// safely add the following unification rules:
 unif_rule fun $x $y ≡ fun $x $y' ↪ [$y ≡ $y'];
 unif_rule fun $x $y ≡ fun $x' $y ↪ [$x ≡ $x'];
 unif_rule fun $x $y ≡ $y ↪ [$x ≡ ◃];
 
-// type of n-ary functions
+// type of n-ary functions: Fun 
 symbol Fun [n] (dom : VSet n) cod ≔ τ (fun dom cod);
 
 // type of n-ary endofunctions
 injective symbol Endo n a ≔ Fun (vcst n a) a;
 
 // lift (a₁ ▹ … ▹ aₙ ▹ ◃) p f x₁ … xₙ ≡ p (f x₁ … xₙ) 
-symbol lift [a b n] (d: VSet n): (τ a → τ b) → Fun d a → Fun d b;
+symbol lift [n] (d: VSet n) [a b]: (τ a → τ b) → Fun d a → Fun d b;
 rule lift ◃ $op $f ↪ $op $f
-with lift (_ ▹ $ts) $op $f ↪ λ x, lift $ts $op ($f x);
+with lift (_ ▹ $ts) $op $f ↪ λ x, lift $ts $op ($f x)
+with lift [0] _ $op $f ↪ $op $f
+with lift [_ +1] $ts $op $f ↪ λ x, lift (tl $ts) $op ($f x);
 
 // comp (a₁ ▹ … ▹ aₙ ▹ ◃) g f x₁ … xₙ ≡ g x₁ … xₙ ∘ f
 symbol comp [n] (d: VSet n) [j b] (g: Fun d (j ⤳ b)) [i] (f: τ i → τ j)
   : Fun d (i ⤳ b) ≔ lift d (λ h:_ → τ b, h ∘ f) g;
 
 // lift2 (a₁ ▹ … ▹ aₙ ▹ ◃) p f g x₁ … xₙ ≡ p (f x₁ … xₙ) (g x₁ … xₙ)
-symbol lift2 [a b c n] (d: VSet n) :
+symbol lift2 [n] (d: VSet n) [a b c]:
   (τ a → τ b → τ c) → Fun d a → Fun d b → Fun d c;
 rule lift2 ◃ $op $f $g ↪ $op $f $g
-with lift2 (_ ▹ $ts) $op $f $g ↪ λ x, lift2 $ts $op ($f x) ($g x);
+with lift2 (_ ▹ $ts) $op $f $g ↪ λ x, lift2 $ts $op ($f x) ($g x)
+with lift2 [0] _ $op $f $g ↪ $op $f $g
+with lift2 [_ +1] $ts $op $f $g ↪ λ x, lift2 (tl $ts) $op ($f x) ($g x);
 
 // cong (a₁ ▹ … ▹ aₙ ▹ ◃) r f g ≡
 // `∀ x₁,`∀ y₁, x₁ = y₁ ⇒ … ⇒ `∀ xₙ,`∀ yₙ, xₙ = yₙ ⇒ f x₁ … xₙ = g y₁ … yₙ
+// we can declare r as implicit thanks to the unif_rule on Fun
 symbol cong [n] (ts: VSet n) [r] (f g: Fun ts r): Prop;
 rule cong ◃ $f $g ↪ $f = $g
-with cong (_ ▹ $ts) $f $g ↪ `∀ x,`∀ y, x = y ⇒ cong $ts ($f x) ($g y);
+with cong (_ ▹ $ts) $f $g ↪ `∀ x,`∀ y, x = y ⇒ cong $ts ($f x) ($g y)
+with cong [0] _ $f $g ↪ $f = $g
+with cong [_ +1] $ts $f $g ↪ `∀ x,`∀ y, x = y ⇒ cong (tl $ts) ($f x) ($g y);
 
+// we can declare r as implicit thanks to the unif_rule on Fun
 opaque symbol refl_cong [n] (ts: VSet n) [r] (f: Fun ts r): π(cong ts f f) ≔
 begin
   have aux: Π r n (ts: VSet n) (f: Fun ts r), π(cong ts f f) {
@@ -75,7 +103,9 @@ require open Stdlib.Impred;
 // `∀x₁:τa₁,`∀y₁, x₁ = y₁ ⇒ … ⇒ `∀xₙ:τaₙ,`∀yₙ, xₙ = yₙ ⇒ f x₁ … xₙ ⇒ g y₁ … yₙ
 symbol subst [n] (ts: VSet n) (f g: Fun ts o): Prop;
 rule subst ◃ $f $g ↪ $f ⇒ $g
-with subst (_ ▹ $ts) $f $g ↪ `∀ x,`∀ y, x = y ⇒ subst $ts ($f x) ($g y);
+with subst (_ ▹ $ts) $f $g ↪ `∀ x,`∀ y, x = y ⇒ subst $ts ($f x) ($g y)
+with subst [0] _ $f $g ↪ $f ⇒ $g
+with subst [$n +1] $ts $f $g ↪ `∀ x,`∀ y, x = y ⇒ subst (tl [$n] $ts) ($f x) ($g y);
 
 opaque symbol refl_subst [n] (ts: VSet n) (p: Fun ts o): π(subst ts p p) ≔
 begin
@@ -84,20 +114,25 @@ begin
   { assume t m ts ih p x y xy; rewrite xy; refine ih (p y) }
 end;
 
-// lifted connectors
+// Lifted connectors
+
 symbol ∧ₙ [n] [d: VSet n] ≔ lift2 d (∧);
+
 symbol ∨ₙ [n] [d: VSet n] ≔ lift2 d (∨);
+
 symbol ⇒ₙ [n] [d: VSet n] ≔ lift2 d (⇒);
 
 // quantₙ Q (a₁ ▹ … ▹ aₙ ▹ ◃) p ≡ `Q x₁, …, `Q xₙ, p x₁ … xₙ
 symbol quantₙ (q: Π a, (τ a → Prop) → Prop) [n] (ts: VSet n): Fun ts o → Prop;
 rule quantₙ _ ◃ $p ↪ $p
-with quantₙ $q ($t ▹ $ts) $p ↪ $q $t (λ x, quantₙ $q $ts ($p x));
+with quantₙ $q ($t ▹ $ts) $p ↪ $q $t (λ x, quantₙ $q $ts ($p x))
+with quantₙ _ [0] _ $p ↪ $p
+with quantₙ $q [$n +1] $ts $p ↪ $q (hd [$n] $ts) (λ x, quantₙ $q (tl [$n] $ts) ($p x));
 
 symbol ∀ₙ [n] ≔ @quantₙ @∀ n;
 symbol ∃ₙ [n] ≔ @quantₙ @∃ n;
 
-// tests
+// Tests
 
 private symbol f1 : Endo 4 o;
 
@@ -128,6 +163,6 @@ assert x y ⊢ let u ≔ comp (nat ▹ ◃) (+) (+1) in u x y ≡ x + (y +1);
 private opaque symbol testSubst (p: Fun (nat ▹ nat ▹ ◃) o) a b x y:
   π (a = x) → π (b = y) → π (p a b) → π (p x y) ≔
 begin
-  assume p a b x y ax by;
-  refine refl_subst (nat ▹ nat ▹ ◃) p _ _ ax _ _ by
+  assume p a b x y ax by; debug +u;
+  refine refl_subst [2] _ p _ _ ax _ _ by
 end;
