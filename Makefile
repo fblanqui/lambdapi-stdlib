@@ -2,7 +2,7 @@ MAKEFLAGS += -r -k -j$(shell nproc)
 
 LPO_MK := lpo.mk
 
-EXCLUDE := _opam
+EXCLUDE := _opam rocq
 EXCEPT := $(EXCLUDE:%=! -path './%/*')
 
 LP := $(shell find . -name '*.lp' $(EXCEPT) -print)
