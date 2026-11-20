@@ -1,6 +1,8 @@
-// Type of set codes for quantifying over sets (polymorphism)
+// type of type codes
 
 constant symbol Set : TYPE;
+
+builtin "Set" ≔ Set;
 
 constant symbol ι : Set;
 
@@ -8,7 +10,7 @@ constant symbol ι : Set;
 
 injective symbol τ : Set → TYPE; // `t or \tau
 
-builtin "T" ≔ τ;
+builtin "El" ≔ τ;
 
 // We assume that sets are non-empty
 

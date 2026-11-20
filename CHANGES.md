@@ -3,7 +3,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## 2.0.0 (2026-11-07)
+
+### Added
+
+- Pos: builtins for parsing decimal numbers
+- Univ: universe levels for Set and Prop
+- Quotient: quotient types
+- NaryFun: n-ary functions and relations
+- Bool: imp, xorb, not_inj and theorems on if-then-else
+- Epsilon: εₑ
+- List: foldl, foldr, All, mergesort and its correctness
+- Nat: parity, div2, shifts, bitwise operations and strong induction
+- Pos: theorems on multiplication
+- Prod: theorems on the Cartesian product
+- Coprod: the co-Cartesian product (disjoint sum)
+- Subset: subset types
+- DepProd: dependent products and transport
+- Z: theorems on multiplication, power and comparison
+
+### Changed
+
+- Changed rewrite rules to be in line with the Rocq standard library.
+- Moved rules not in line with Rocq to the module ExtraRules.
+
+## 1.4.0 (2026-07-07)
 
 ### Added
 
