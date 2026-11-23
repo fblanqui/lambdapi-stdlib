@@ -1,80 +1,90 @@
+MAKEFLAGS += -r -k -j$(shell nproc)
+
 .PREFIX:
 
 .PHONY: default
 default:
 	$(MAKE) lp
 	$(MAKE) dk
-	$(MAKE) dko
+	#$(MAKE) INCLUDE_DKO_MK=1 dko
 	$(MAKE) v
 	$(MAKE) vo
 
-LPFILES := $(wildcard ../*.lp)
+ORIG_LPFILES := $(wildcard ../*.lp)
+LPFILES := $(ORIG_LPFILES:../%=%)
 
 .PHONY: lp
-lp: $(LPFILES:../%.lp=%.lp)
+lp: $(LPFILES)
 
 %.lp: ../%.lp
 	sed -e 's/^opaque //' $< > $@
 
-.PHONY: clean-lp
-clean-lp: clean-dk
-	-rm -f $(LPFILES)
+KEEP := encoding mapping renaming
+EXCEPT := $(KEEP:%=-a ! -name %.lp)
 
-DKFILES := $(LPFILES:../%.lp=%.dk)
+.PHONY: clean-lp
+clean-lp:
+	-find . -name '*.lp' $(EXCEPT) -delete
+
+DKFILES := $(LPFILES:%.lp=%.dk)
 
 .PHONY: dk
 dk: $(DKFILES)
 
 %.dk: %.lp
-	lambdapi export -o dk $< > $@
+	lambdapi export -o dk -w -v 0 $< > $@
 
 .PHONY: clean-dk
 clean-dk: clean-dko clean-v
-	-rm -f $(DKFILES) dko.mk
+	-find . -name '*.dk' -delete
+	-rm -f dko.mk
 
 .PHONY: dko
 dko: $(DKFILES:%.dk=%.dko)
 
-#DKCHECK := dk check -e
-DKCHECK := lambdapi check -c --lib-root=.
+DKCHECK := dk check -e
 
 %.dko: %.dk
 	$(DKCHECK) $<
 
+ifeq ($(INCLUDE_DKO_MK),1)
 include dko.mk
 
 dko.mk: $(DKFILES)
-	dk dep $(DKFILES) > $@
+	dk dep -q $^ > $@
+endif
 
 .PHONY: clean-dko
 clean-dko:
-	-rm -f *.dko
+	-find -name '*.dko' -delete
 
-VFILES := $(DKFILES:%.dk=%.v)
+VFILES_TODO := $(DKFILES:%.dk=%.v)
 
 .PHONY: v
-v: $(VFILES)
+v: $(VFILES_TODO)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
 	lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations $*.dk > $@
 
 .PHONY: clean-v
 clean-v: clean-vo
-	-rm -f $(VFILES) rocq.mk rocq.mk.conf *.glob
-
-rocq.mk: _CoqProject
-	rocq makefile -f _CoqProject -o $@
+	-find . -name '*.v' -a ! -name mapping.v -delete
+	-find . -name '*.glob'
+	-rm -f rocq.mk rocq.mk.conf
 
 .PHONY: vo
 vo: rocq.mk
 	$(MAKE) -f rocq.mk
 
-%.vo: rocq.mk
+%.vo: rocq.mk %.v
 	$(MAKE) -f rocq.mk $@
+
+rocq.mk: _CoqProject
+	rocq makefile -f $< -o $@
 
 .PHONY: clean-vo
 clean-vo:
-	rm -f *.vo*
+	-find -name '*.vo*' -delete
 
 .PHONY: clean
 clean: clean-dk
