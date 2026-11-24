@@ -70,26 +70,27 @@ builtin "eps_spec" ≔ Epsilon.{|εᵢ|};
 // Nat
 builtin "nat" ≔ Nat.{|ℕ|};
 builtin "O" ≔ Nat._0;
-builtin "S" ≔ Nat.+1;
-builtin "Nat.add" ≔ Nat.+;
-builtin "Nat.sub" ≔ Nat.-;
+builtin "S" ≔ Nat.{|+1|};
+builtin "Nat.add" ≔ Nat.{|+|};
+builtin "Nat.sub" ≔ Nat.{|-|};
 builtin "Nat.pred" ≔ Nat.{|∸1|};
-builtin "Nat.mul" ≔ Nat.*;
+builtin "Nat.mul" ≔ Nat.{|*|};
 builtin "Nat.leb" ≔ Nat.{|≤|};
-builtin "Nat.ltb" ≔ Nat.<;
+builtin "Nat.ltb" ≔ Nat.{|<|};
 
 // List
 builtin "List" ≔ List.{|𝕃|};
 builtin "nil" ≔ List.{|□|};
 builtin "cons" ≔ List.{|⸬|};
 builtin "List.In" ≔ List.{|∈|};
-builtin "app" ≔ List.++;
+builtin "app" ≔ List.{|++|};
 
 // Pos
 builtin "positive" ≔ Pos.{|ℙ|};
 builtin "xI" ≔ Pos.I;
 builtin "xO" ≔ Pos.O;
 builtin "xH" ≔ Pos.H;
+builtin "poitisve_ind" ≔ Pos.{|ind_ℙ|};
 
 // Z
 builtin "Z" ≔ Z.{|ℤ|};
