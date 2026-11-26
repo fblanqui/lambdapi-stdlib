@@ -7,15 +7,15 @@ builtin "False_ind" ≔ Prop.{|⊥ₑ|};
 builtin "imp" ≔ Prop.{|⇒|};
 builtin "not" ≔ Prop.{|¬|};
 builtin "and" ≔ Prop.{|∧|};
-builtin "conj" ≔ Prop.{|∧ᵢ|};
-builtin "proj1" ≔ Prop.{|∧ₑ₁|};
-builtin "proj2" ≔ Prop.{|∧ₑ₂|};
+builtin "@conj" ≔ Prop.{|∧ᵢ|};
+builtin "@proj1" ≔ Prop.{|∧ₑ₁|};
+builtin "@proj2" ≔ Prop.{|∧ₑ₂|};
 builtin "\/" ≔ Prop.{|∨|};
-builtin "or_intro1" ≔ Prop.{|∨ᵢ₁|};
-builtin "or_intro2" ≔ Prop.{|∨ᵢ₂|};
-builtin "or_elim" ≔ Prop.{|∨ₑ|};
-builtin "ex_intro" ≔ Prop.{|∃ᵢ|};
-builtin "ex_elim" ≔ Prop.{|∃ₑ|};
+builtin "@or_intro1" ≔ Prop.{|∨ᵢ₁|};
+builtin "@or_intro2" ≔ Prop.{|∨ᵢ₂|};
+builtin "@or_elim" ≔ Prop.{|∨ₑ|};
+builtin "@ex_intro" ≔ Prop.{|∃ᵢ|};
+builtin "@ex_elim" ≔ Prop.{|∃ₑ|};
 builtin "iff" ≔ Prop.{|⇔|};
 
 // Set

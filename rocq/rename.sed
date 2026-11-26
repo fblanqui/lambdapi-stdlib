@@ -36,8 +36,8 @@ s/ℙ/Pos/g
 s/ℤ/Z/g
 s/¬/neg/g
 s/≠/neq/g
-s/∧/conj/g
-s/∨/disj/g
+s/∧/And/g
+s/∨/Or/g
 s/∃/exist/g
 s/×/prod/g
 s/η/eta/g

@@ -27,17 +27,21 @@ default:
 ##############################################################################
 # generation of patched lp files (removal of the "opaque" keywords)
 
-# Set.lp is renamed to Sort.lp because "Require Set" fails in Rocq.
-LPFILES := $(shell ls ../*.lp | sed -e 's/..\///g' -e 's/Set\.lp/Sort.lp/')
+# Set.lp is renamed to Sets.lp because "Require Set" fails in Rocq.
+# Prop.lp is renamed to Props.lp because "Require Prop" fails in Rocq.
+LPFILES := $(shell ls ../*.lp | sed -e 's/..\///g' -e 's/Set\.lp/Sets.lp/' -e 's/Prop\.lp/Props.lp/')
 
 .PHONY: lp
 lp: $(LPFILES)
 
-Sort.lp: ../Set.lp
+Sets.lp: ../Set.lp
+	sed -e 's/^opaque //' $< > $@
+
+Props.lp: ../Prop.lp
 	sed -e 's/^opaque //' $< > $@
 
 %.lp: ../%.lp
-	sed -e 's/^opaque //' -e 's/\.Set/.Sort/' $< > $@
+	sed -e 's/^opaque //' -e 's/\.Set\([ ;]\)/.Sets\1/' -e 's/\.Prop\([ ;]\)/.Props\1/' $< > $@
 
 KEEP := encoding mapping renaming
 EXCEPT := $(KEEP:%=-a ! -name %.lp)
