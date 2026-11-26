@@ -9,6 +9,6 @@ rocq.mk.conf
 *.dk*
 dko.mk
 *.lp
-!rocq/encoding.lp
-!rocq/renaming.lp
-!rocq/mapping.lp
+!encoding.lp
+!renaming.lp
+!mapping.lp

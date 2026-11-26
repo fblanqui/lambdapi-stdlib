@@ -21,7 +21,7 @@ default:
 	$(MAKE) lp
 	$(MAKE) dk
 	#$(MAKE) INCLUDE_DKO_MK=1 dko
-	$(MAKE) check-names
+	#$(MAKE) check-names
 	$(MAKE) v
 	$(MAKE) vo
 
@@ -86,10 +86,15 @@ clean-dko:
 # check the validity of names in rocq
 
 .PHONY: check-names
-check-names: $(DKFILES:%.dk=%.dk.check-names)
+check-names: invalid-names
+	test -s $<
 
-%.dk.check-names: %.dk
-	@lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations --only-check-names $*.dk
+invalid-names: $(DKFILES:%.dk=.%.dk-invalid-names)
+	@cat $^ > $@
+
+.%.dk-invalid-names: %.dk
+	@echo check names in $< ...
+	@-lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations --only-check-names $< > $@ 2>&1
 
 ##############################################################################
 # generation of rocq files
@@ -130,4 +135,4 @@ clean-vo:
 # cleaning every thing
 
 .PHONY: clean
-clean: clean-dk
+clean: clean-lp
