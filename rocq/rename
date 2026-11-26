@@ -1,9 +1,5 @@
 #!/bin/bash
 
-while IFS= read -r line; do
-    if [[ $line =~ \{\|([^|]+)\|\} ]]; then
-        n="${BASH_REMATCH[1]}"
-        p=$(printf '%s\n' "$n" | sed -f rename.sed)
-        echo "builtin \"$p\" ≔ $n;"
-    fi
+while IFS= read -r n; do
+    echo "builtin \"$(echo "$n" | sed -f rename.sed)\" ≔ $n;"
 done

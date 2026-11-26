@@ -1,8 +1,8 @@
 // symbols used for encoding simple type theory
 
-builtin "Set" ≔ Set.Set;
-builtin "El" ≔ Set.{|τ|};
-builtin "arr" ≔ Set.{|⤳|};
+builtin "Set" ≔ Sort.Set;
+builtin "El" ≔ Sort.{|τ|};
+builtin "arr" ≔ Sort.{|⤳|};
 builtin "prop" ≔ Prop.Prop;
 builtin "Prf" ≔ Prop.{|π|};
 builtin "imp" ≔ Prop.{|⇒|};

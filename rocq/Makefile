@@ -27,14 +27,17 @@ default:
 ##############################################################################
 # generation of patched lp files (removal of the "opaque" keywords)
 
-ORIG_LPFILES := $(wildcard ../*.lp)
-LPFILES := $(ORIG_LPFILES:../%=%)
+# Set.lp is renamed to Sort.lp because "Require Set" fails in Rocq.
+LPFILES := $(shell ls ../*.lp | sed -e 's/..\///g' -e 's/Set\.lp/Sort.lp/')
 
 .PHONY: lp
 lp: $(LPFILES)
 
-%.lp: ../%.lp
+Sort.lp: ../Set.lp
 	sed -e 's/^opaque //' $< > $@
+
+%.lp: ../%.lp
+	sed -e 's/^opaque //' -e 's/\.Set/.Sort/' $< > $@
 
 KEEP := encoding mapping renaming
 EXCEPT := $(KEEP:%=-a ! -name %.lp)
@@ -84,10 +87,10 @@ clean-dko:
 ##############################################################################
 # check the validity of names in rocq
 
-renaming.lp: rename rename.sed invalid-names
-	./rename < invalid-names > $@
+renaming.lp: rename rename.sed /tmp/invalid-names
+	./rename < /tmp/invalid-names > $@
 
-invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
+/tmp/invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
 	@cat $^ | sort -u > $@
 
 /tmp/%.dk-invalid-names: encoding.lp mapping.lp %.dk
@@ -104,7 +107,7 @@ v: $(VFILES)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
 	@echo lambdapi export -o stt_coq $*.dk > $@
-	@lambdapi export -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations $*.dk > $@
+	@lambdapi export -w -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations $*.dk > $@
 
 .PHONY: clean-v
 clean-v: clean-vo

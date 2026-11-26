@@ -1,8 +1,13 @@
+s/{|//g
+s/|}//g
+
 s/=/eq/g
-s/*/mul/g
+s/\*/mul/g
 s/&/amp/g
 s/\^/pow/g
 s/-/sub/g
+s/!/factorial/g
+s/\#/tac_/g
 
 s/++/app/g
 s/+/add/g
