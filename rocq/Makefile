@@ -32,16 +32,22 @@ default:
 LPFILES := $(shell ls ../*.lp | sed -e 's/..\///g' -e 's/Set\.lp/Sets.lp/' -e 's/Prop\.lp/Props.lp/')
 
 .PHONY: lp
-lp: $(LPFILES)
+lp: lambdapi.pkg $(LPFILES)
+
+# rename root_path to not clash with Rocq's Stdlib
+lambdapi.pkg: ../lambdapi.pkg
+	sed -e 's/Stdlib/Lambdapi/' $< > $@
+
+SED := sed -e 's/^opaque //' -e 's/ Stdlib\./ Lambdapi./g'
 
 Sets.lp: ../Set.lp
-	sed -e 's/^opaque //' $< > $@
+	$(SED) $< > $@
 
 Props.lp: ../Prop.lp
-	sed -e 's/^opaque //' $< > $@
+	$(SED) $< > $@
 
 %.lp: ../%.lp
-	sed -e 's/^opaque //' -e 's/\.Set\([ ;]\)/.Sets\1/' -e 's/\.Prop\([ ;]\)/.Props\1/' $< > $@
+	$(SED) -e 's/\.Set\([ ;]\)/.Sets\1/' -e 's/\.Prop\([ ;]\)/.Props\1/' $< > $@
 
 KEEP := encoding mapping renaming
 EXCEPT := $(KEEP:%=-a ! -name %.lp)
@@ -97,9 +103,11 @@ renaming.lp: renaming renaming.sed /tmp/invalid-names
 /tmp/invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
 	@cat $^ | sort -u > $@
 
+EXPORT := lambdapi export -w -o stt_coq --encoding encoding.lp --mapping mapping.lp --requiring mapping --use-notations
+
 /tmp/%.dk-invalid-names: encoding.lp mapping.lp %.dk
 	@echo check names in $*.dk ...
-	@lambdapi export -o stt_coq --encoding encoding.lp --mapping mapping.lp --requiring mapping --use-notations --only-check-names $*.dk > $@
+	@$(EXPORT) --only-check-names $*.dk > $@
 
 ##############################################################################
 # generation of rocq files
@@ -111,7 +119,7 @@ v: $(VFILES)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
 	@echo lambdapi export -o stt_coq $*.dk > $@
-	@lambdapi export -w -o stt_coq --encoding encoding.lp --renaming renaming.lp --mapping mapping.lp --requiring mapping --use-notations $*.dk > $@
+	@$(EXPORT) --renaming renaming.lp $*.dk > $@
 
 .PHONY: clean-v
 clean-v: clean-vo
