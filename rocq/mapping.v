@@ -8,7 +8,7 @@ Definition imp (p q : Prop) : Prop := p -> q.
 Record Type' := { type :> Type; el : type }.
 
 (* Fol.lp *)
-Definition all {a : Set} (P: a -> Prop) : Prop := forall x:a, P x.
+Definition all {a : Type'} (P: a -> Prop) : Prop := forall x:a, P x.
 
 (* Hol.lp *)
 Definition arr a (b : Type') := {| type := a -> b; el := fun _ => el b |}.

@@ -1,7 +1,7 @@
 # Makefile to translate lp files to rocq
 
 # Because, in Lambdapi, the definitions/proofs of opaque symbols is
-# not recorded in lpo files, and the stt_coq export works on
+# not recorded in lpo files, and the stt_rocq export works on
 # non-elaborated terms, to translate lp files to rocq, for the moment,
 # we need to proceed in several steps:
 
@@ -25,16 +25,18 @@ default:
 	$(MAKE) vo
 
 ##############################################################################
-# generation of patched lp files (removal of the "opaque" keywords)
+# generation of patched lp files
 
-# Set.lp is renamed to Sets.lp because "Require Set" fails in Rocq.
-# Prop.lp is renamed to Props.lp because "Require Prop" fails in Rocq.
+# 1) We remove the "opaque" keywords so that proofs are recorded.
+# 2) We rename the root_path so that it does not clash with Rocq's Stdlib.
+# 3) Set.lp is renamed to Sets.lp because "Require Set" fails in Rocq.
+# 4) Prop.lp is renamed to Props.lp because "Require Prop" fails in Rocq.
+
 LPFILES := $(shell ls ../*.lp | sed -e 's/..\///g' -e 's/Set\.lp/Sets.lp/' -e 's/Prop\.lp/Props.lp/')
 
 .PHONY: lp
 lp: lambdapi.pkg $(LPFILES)
 
-# rename root_path to not clash with Rocq's Stdlib
 lambdapi.pkg: ../lambdapi.pkg
 	sed -e 's/Stdlib/Lambdapi/' $< > $@
 
@@ -95,7 +97,7 @@ clean-dko:
 	-find -name '*.dko' -delete
 
 ##############################################################################
-# check the validity of names in rocq
+# generate renaming.lp to handle names that are invalid in rocq
 
 renaming.lp: renaming renaming.sed /tmp/invalid-names
 	./renaming < /tmp/invalid-names > $@
@@ -103,7 +105,7 @@ renaming.lp: renaming renaming.sed /tmp/invalid-names
 /tmp/invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
 	@cat $^ | sort -u > $@
 
-EXPORT := lambdapi export -w -o stt_coq --encoding encoding.lp --mapping mapping.lp --requiring mapping --use-notations
+EXPORT := lambdapi export -w -o stt_rocq --encoding encoding.lp --mapping mapping.lp --requiring mapping --use-notations
 
 /tmp/%.dk-invalid-names: encoding.lp mapping.lp %.dk
 	@echo check names in $*.dk ...
@@ -118,7 +120,7 @@ VFILES := $(DKFILES:%.dk=%.v)
 v: $(VFILES)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
-	@echo lambdapi export -o stt_coq $*.dk > $@
+	@echo lambdapi export -o stt_rocq $*.dk > $@
 	@$(EXPORT) --renaming renaming.lp $*.dk > $@
 
 .PHONY: clean-v

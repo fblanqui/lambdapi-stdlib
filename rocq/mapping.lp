@@ -1,58 +1,58 @@
 // Prop
-builtin "Prop" ≔ Prop.Prop;
-builtin "True" ≔ Prop.{|⊤|};
-builtin "I" ≔ Prop.{|⊤ᵢ|};
-builtin "False" ≔ Prop.{|⊥|};
-builtin "False_ind" ≔ Prop.{|⊥ₑ|};
-builtin "imp" ≔ Prop.{|⇒|};
-builtin "not" ≔ Prop.{|¬|};
-builtin "and" ≔ Prop.{|∧|};
-builtin "@conj" ≔ Prop.{|∧ᵢ|};
-builtin "@proj1" ≔ Prop.{|∧ₑ₁|};
-builtin "@proj2" ≔ Prop.{|∧ₑ₂|};
-builtin "\/" ≔ Prop.{|∨|};
-builtin "@or_intro1" ≔ Prop.{|∨ᵢ₁|};
-builtin "@or_intro2" ≔ Prop.{|∨ᵢ₂|};
-builtin "@or_elim" ≔ Prop.{|∨ₑ|};
-builtin "@ex_intro" ≔ Prop.{|∃ᵢ|};
-builtin "@ex_elim" ≔ Prop.{|∃ₑ|};
-builtin "iff" ≔ Prop.{|⇔|};
+builtin "Prop" ≔ Props.Prop;
+builtin "True" ≔ Props.{|⊤|};
+builtin "I" ≔ Props.{|⊤ᵢ|};
+builtin "False" ≔ Props.{|⊥|};
+builtin "False_ind" ≔ Props.{|⊥ₑ|};
+builtin "imp" ≔ Props.{|⇒|};
+builtin "not" ≔ Props.{|¬|};
+builtin "and" ≔ Props.{|∧|};
+builtin "@conj" ≔ Props.{|∧ᵢ|};
+builtin "@proj1" ≔ Props.{|∧ₑ₁|};
+builtin "@proj2" ≔ Props.{|∧ₑ₂|};
+builtin "\/" ≔ Props.{|∨|};
+builtin "@or_introl" ≔ Props.{|∨ᵢ₁|};
+builtin "@or_intror" ≔ Props.{|∨ᵢ₂|};
+builtin "@ex_intro" ≔ Props.{|∃ᵢ|};
+builtin "@ex_elim" ≔ Props.{|∃ₑ|};
+builtin "iff" ≔ Props.{|⇔|};
 
 // Set
-builtin "Type'" ≔ Set.Set;
-builtin "nat" ≔ Set.{|ι|};
-builtin "el" ≔ Set.el;
+builtin "Type'" ≔ Sets.Set;
+builtin "nat" ≔ Sets.{|ι|};
+builtin "el" ≔ Sets.el;
 
 // Prod
+builtin "prod" ≔ Prod.Prod;
 builtin "prod" ≔ Prod.{|×|};
-builtin "pair" ≔ Prod.{|‚|};
-builtin "fst" ≔ Prod.{|₁|};
-builtin "snd" ≔ Prod.{|₂|};
+builtin "@pair" ≔ Prod.{|‚|};
+builtin "@fst" ≔ Prod.{|₁|};
+builtin "@snd" ≔ Prod.{|₂|};
 
 // FOL
-builtin "all" ≔ FOL.{|∀|};
-builtin "ex" ≔ FOL.{|∃|};
+builtin "@all" ≔ FOL.{|∀|};
+builtin "@ex" ≔ FOL.{|∃|};
 
 // HOL
 builtin "arr" ≔ HOL.{|⤳|};
 
 // Eq
-builtin "eq" ≔ Eq.{|=|};
-builtin "eq_refl" ≔ Eq.eq_refl;
-builtin "ind_eq" ≔ Eq.ind_eq;
-builtin "neq" ≔ Eq.{|≠|};
+builtin "@eq" ≔ Eq.{|=|};
+builtin "@eq_refl" ≔ Eq.eq_refl;
+builtin "@ind_eq" ≔ Eq.ind_eq;
+builtin "@neq" ≔ Eq.{|≠|};
 
 // Bool
 builtin "bool'" ≔ Bool.{|𝔹|};
 builtin "bool'" ≔ Bool.bool;
-builtin "Is_true" ≔ Bool.istrue;
+builtin "is_true" ≔ Bool.istrue;
 builtin "negb" ≔ Bool.not;
 builtin "orb" ≔ Bool.or;
 builtin "andb" ≔ Bool.and;
 builtin "if'" ≔ Bool.if;
 
 // Classic
-builtin "classic" ≔ Classic.em; 
+builtin "@classic" ≔ Classic.em; 
 
 // Comp
 builtin "comparison'" ≔ Comp.comp;
@@ -64,8 +64,8 @@ builtin "isGT" ≔ Comp.isGt;
 builtin "case_Comp" ≔ Comp.case_Comp;
 
 // Epsilon
-builtin "eps" ≔ Epsilon.{|ε|};
-builtin "eps_spec" ≔ Epsilon.{|εᵢ|};
+builtin "@eps" ≔ Epsilon.{|ε|};
+builtin "@eps_spec" ≔ Epsilon.{|εᵢ|};
 
 // Nat
 builtin "nat" ≔ Nat.{|ℕ|};
@@ -99,3 +99,6 @@ builtin "Zpos" ≔ Z.Zpos;
 builtin "Zneg" ≔ Z.Zneg;
 builtin "Z.opp" ≔ Z.{|—|};
 builtin "Z.compare" ≔ Z.{|≐|};
+
+// DepProd
+builtin "DProd" ≔ DepProd.dprod;
