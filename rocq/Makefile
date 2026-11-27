@@ -91,8 +91,8 @@ clean-dko:
 ##############################################################################
 # check the validity of names in rocq
 
-renaming.lp: rename rename.sed /tmp/invalid-names
-	./rename < /tmp/invalid-names > $@
+renaming.lp: renaming renaming.sed /tmp/invalid-names
+	./renaming < /tmp/invalid-names > $@
 
 /tmp/invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
 	@cat $^ | sort -u > $@

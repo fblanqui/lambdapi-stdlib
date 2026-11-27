@@ -1,0 +1,5 @@
+#!/bin/bash
+
+while IFS= read -r n; do
+    echo "builtin \"$(echo "$n" | sed -f $0.sed)\" ≔ $n;"
+done
