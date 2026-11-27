@@ -121,7 +121,7 @@ v: $(VFILES)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
 	@echo lambdapi export -o stt_rocq $*.dk > $@
-	@$(EXPORT) --renaming renaming.lp $*.dk > $@
+	@$(EXPORT) --renaming renaming.lp $*.dk > $@ || (rm -f $@; exit 1)
 
 .PHONY: clean-v
 clean-v: clean-vo
