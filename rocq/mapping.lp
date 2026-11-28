@@ -43,9 +43,9 @@ builtin "@ind_eq" ≔ Eq.ind_eq;
 builtin "@neq" ≔ Eq.{|≠|};
 
 // Bool
-builtin "bool'" ≔ Bool.{|𝔹|};
-builtin "bool'" ≔ Bool.bool;
-builtin "is_true" ≔ Bool.istrue;
+builtin "bool" ≔ Bool.{|𝔹|};
+builtin "bool" ≔ Bool.bool;
+builtin "Is_true" ≔ Bool.istrue;
 builtin "negb" ≔ Bool.not;
 builtin "orb" ≔ Bool.or;
 builtin "andb" ≔ Bool.and;
@@ -55,8 +55,8 @@ builtin "if'" ≔ Bool.if;
 builtin "@classic" ≔ Classic.em; 
 
 // Comp
-builtin "comparison'" ≔ Comp.comp;
-builtin "comparison'" ≔ Comp.Comp;
+builtin "comparison" ≔ Comp.comp;
+builtin "comparison" ≔ Comp.Comp;
 builtin "CompOpp" ≔ Comp.opp;
 builtin "isEq" ≔ Comp.isEq;
 builtin "isLt" ≔ Comp.isLt;
@@ -100,5 +100,11 @@ builtin "Zneg" ≔ Z.Zneg;
 builtin "Z.opp" ≔ Z.{|—|};
 builtin "Z.compare" ≔ Z.{|≐|};
 
+// Quotient
+builtin "Quot" ≔ Quotient.{|⫽|};
+
 // DepProd
 builtin "DProd" ≔ DepProd.dprod;
+
+// DepProd
+//builtin "Subset" ≔ Subset.subset;

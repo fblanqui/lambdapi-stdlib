@@ -1,34 +1,40 @@
-From Stdlib Require Export Classical_Prop.
-From Stdlib Require Export ClassicalEpsilon.
+From Stdlib Require Export Classical_Prop ClassicalEpsilon Bool Nat List.
 
-(* Prop.lp *)
+(* Prop *)
+
 Definition imp (p q : Prop) : Prop := p -> q.
 
-(* Set.lp *)
+(* Set *)
+
 Record Type' := { type :> Type; el : type }.
 
-(* Fol.lp *)
+(* FOL *)
+
 Definition all {a : Type'} (P: a -> Prop) : Prop := forall x:a, P x.
 
-(* Hol.lp *)
+(* HOL *)
+
 Definition arr a (b : Type') := {| type := a -> b; el := fun _ => el b |}.
 Canonical arr.
 
-(* Eq.lp *)
+(* Eq *)
+
 Lemma ind_eq : forall {a : Type'} {x y : a}, (x = y) -> forall p, (p y) -> p x.
 Proof.
   intros a x y e p py. rewrite e. exact py.
 Qed.
 Definition neq {a : Type'} (x y : a) := ~ (x = y).
 
-(* Bool.lp*)
+(* Bool *)
+
 Definition bool' := {| type := bool ; el := true|}.
 Canonical bool'.
 							 
 Definition if' (b : bool) {a : Type'} (e1 : a) (e2 : a) := 
     if b then e1 else e2.
 
-(* Comp.lp*)
+(* Comp *)
+
 Definition comparison' := {| type := comparison ; el := Eq|}.
 
 Definition isEq (c : comparison) := 
@@ -56,11 +62,22 @@ match c with
 | Gt => z
 end.
 				       
-(* Epsilon.v*)
- Definition eps : forall {A : Type'}, (type A -> Prop) -> type A :=
+(* Epsilon *)
+
+Definition eps : forall {A : Type'}, (type A -> Prop) -> type A :=
   fun A P => epsilon (inhabits (el A)) P.
   
 Lemma eps_spec {A : Type'} {P : type A -> Prop} : (exists x, P x) -> P (eps P).
 Proof. intro h. unfold eps. apply epsilon_spec. exact h. Qed.
 
+(* Prod *)
 
+Definition prod' (A B : Type')
+  := {| type := prod A B; el := pair (el A) (el B) |}.
+Canonical prod'.
+
+(* Subset *)
+
+(*Definition subset (A : Type') (P: A -> Prop) (h: @ex A (fun x : A => P x)): Type'.
+Proof.
+Defined.*)

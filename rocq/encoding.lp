@@ -1,9 +1,9 @@
 // symbols used for encoding simple type theory
 
-builtin "Set" ≔ Set;
+builtin "Set" ≔ Sets;
 builtin "El" ≔ {|τ|};
 builtin "arr" ≔ {|⤳|};
-builtin "prop" ≔ Prop;
+builtin "prop" ≔ Props;
 builtin "Prf" ≔ {|π|};
 builtin "imp" ≔ {|⇒|};
 builtin "not" ≔ {|¬|};

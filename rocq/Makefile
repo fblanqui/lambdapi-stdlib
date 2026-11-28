@@ -55,7 +55,7 @@ KEEP := encoding mapping renaming
 EXCEPT := $(KEEP:%=-a ! -name %.lp)
 
 .PHONY: clean-lp
-clean-lp:
+clean-lp: clean-dk
 	-find . -name '*.lp' $(EXCEPT) -delete
 
 ##############################################################################
@@ -105,7 +105,7 @@ renaming.lp: renaming renaming.sed /tmp/invalid-names
 /tmp/invalid-names: $(DKFILES:%.dk=/tmp/%.dk-invalid-names)
 	@cat $^ | sort -u > $@
 
-EXPORT := lambdapi export -w -o stt_rocq --encoding encoding.lp --mapping mapping.lp --requiring mapping --use-notations
+EXPORT := lambdapi export -w -v 0 -o stt_rocq --encoding encoding.lp --mapping mapping.lp
 
 /tmp/%.dk-invalid-names: encoding.lp mapping.lp %.dk
 	@echo check names in $*.dk ...
@@ -121,12 +121,12 @@ v: $(VFILES)
 
 %.v: encoding.lp mapping.lp renaming.lp %.dk
 	@echo lambdapi export -o stt_rocq $*.dk > $@
-	@$(EXPORT) --renaming renaming.lp $*.dk > $@ || (rm -f $@; exit 1)
+	@$(EXPORT) --requiring Lambdapi.mapping --use-notations --renaming renaming.lp $*.dk > $@ || (rm -f $@; exit 1)
 
 .PHONY: clean-v
 clean-v: clean-vo
 	-find . -name '*.v' -a ! -name mapping.v -delete
-	-find . -name '*.glob'
+	-find . -name '*.glob' -delete
 	-rm -f rocq.mk rocq.mk.conf
 
 ##############################################################################

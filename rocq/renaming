@@ -1,5 +1,5 @@
 #!/bin/bash
 
 while IFS= read -r n; do
-    echo "builtin \"$(echo "$n" | sed -f $0.sed)\" ≔ $n;"
+    echo "builtin \"$(echo "$n" | sed -f $0.sed -e 's/\([0-9]\)/P\1/')\" ≔ $n;"
 done
