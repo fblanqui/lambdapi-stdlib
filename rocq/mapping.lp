@@ -45,11 +45,14 @@ builtin "@neq" ≔ Eq.{|≠|};
 // Bool
 builtin "bool" ≔ Bool.{|𝔹|};
 builtin "bool" ≔ Bool.bool;
+builtin "true" ≔ Bool.true;
+builtin "false" ≔ Bool.false;
 builtin "Is_true" ≔ Bool.istrue;
 builtin "negb" ≔ Bool.not;
 builtin "orb" ≔ Bool.or;
 builtin "andb" ≔ Bool.and;
-builtin "if'" ≔ Bool.if;
+builtin "@if'" ≔ Bool.if;
+builtin "xorb" ≔ Bool.xorb;
 
 // Classic
 builtin "@classic" ≔ Classic.em; 
@@ -69,8 +72,10 @@ builtin "@eps_spec" ≔ Epsilon.{|εᵢ|};
 
 // Nat
 builtin "nat" ≔ Nat.{|ℕ|};
+builtin "nat" ≔ Nat.nat;
 builtin "O" ≔ Nat._0;
 builtin "S" ≔ Nat.{|+1|};
+builtin "is0" ≔ Nat.is0;
 builtin "Nat.add" ≔ Nat.{|+|};
 builtin "Nat.sub" ≔ Nat.{|-|};
 builtin "Nat.pred" ≔ Nat.{|∸1|};
@@ -80,6 +85,7 @@ builtin "Nat.ltb" ≔ Nat.{|<|};
 
 // List
 builtin "List" ≔ List.{|𝕃|};
+builtin "List" ≔ List.list;
 builtin "nil" ≔ List.{|□|};
 builtin "cons" ≔ List.{|⸬|};
 builtin "List.In" ≔ List.{|∈|};

@@ -61,7 +61,20 @@ match c with
 | Lt => y
 | Gt => z
 end.
-				       
+
+(* Nat *)
+
+Definition nat' := {| type := nat; el := 0 |}.
+Canonical nat'.
+
+Fixpoint is0 n := match n with 0 => true | _ => false end.
+
+(* Prod *)
+
+Definition prod' (A B : Type')
+  := {| type := prod A B; el := pair (el A) (el B) |}.
+Canonical prod'.
+
 (* Epsilon *)
 
 Definition eps : forall {A : Type'}, (type A -> Prop) -> type A :=
@@ -69,12 +82,6 @@ Definition eps : forall {A : Type'}, (type A -> Prop) -> type A :=
   
 Lemma eps_spec {A : Type'} {P : type A -> Prop} : (exists x, P x) -> P (eps P).
 Proof. intro h. unfold eps. apply epsilon_spec. exact h. Qed.
-
-(* Prod *)
-
-Definition prod' (A B : Type')
-  := {| type := prod A B; el := pair (el A) (el B) |}.
-Canonical prod'.
 
 (* Subset *)
 
